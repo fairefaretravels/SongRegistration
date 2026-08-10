@@ -1,0 +1,2465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Reel Ledger — Registration Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --deck:#14100D;
+  --panel:#1E1812;
+  --panel-raised:#241D16;
+  --brass-line:#5A4A38;
+  --brass-line-soft:#3A3025;
+  --paper:#F2E9DC;
+  --paper-dim:#B8AC98;
+  --amber:#E8A33D;
+  --blue:#5B9BC7;
+  --violet:#9F72BE;
+  --green:#4FA875;
+  --bright-green:#4FD387;
+  --red:#C1443C;
+  --shadow-deep:inset 0 2px 6px rgba(0,0,0,.55),
+                0 1px 0 rgba(255,255,255,.03);
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  padding:0;
+}
+body{
+  background:
+    radial-gradient(ellipse at top,#1c1611 0%,var(--deck) 55%);
+  color:var(--paper);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  padding-bottom:40px;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{
+  background:var(--amber);
+  color:#14100D;
+}
+h1,h2,h3,.display{
+  font-family:'Space Grotesk',sans-serif;
+}
+.mono{
+  font-family:'IBM Plex Mono',monospace;
+  font-variant-numeric:tabular-nums;
+}
+a{
+  color:var(--amber);
+}
+/* ================= HEADER ================= */
+header.top{
+  padding:22px 18px 16px;
+  border-bottom:1px solid var(--brass-line-soft);
+  background:linear-gradient(180deg,#1a140f 0%,transparent 100%);
+}
+.brand-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.brand{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.brand .eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--amber);
+  opacity:.85;
+}
+.brand h1{
+  font-size:20px;
+  margin:0;
+  color:var(--paper);
+  font-weight:700;
+}
+.brand .sub{
+  font-size:12px;
+  color:var(--paper-dim);
+  margin-top:2px;
+}
+.role-toggle{
+  display:flex;
+  border:1px solid var(--brass-line);
+  border-radius:8px;
+  overflow:hidden;
+  background:var(--panel);
+  flex-shrink:0;
+}
+.role-toggle button{
+  border:none;
+  background:transparent;
+  color:var(--paper-dim);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  letter-spacing:.06em;
+  padding:8px 10px;
+  cursor:pointer;
+  text-transform:uppercase;
+}
+.role-toggle button.active{
+  background:var(--amber);
+  color:#14100D;
+  font-weight:700;
+}
+main{
+  max-width:640px;
+  margin:0 auto;
+  padding:0 14px;
+}
+/* ================= CONSOLE ================= */
+.console{
+  margin-top:16px;
+  background:linear-gradient(
+    180deg,
+    var(--panel-raised),
+    var(--panel)
+  );
+  border:1px solid var(--brass-line);
+  border-radius:14px;
+  padding:16px 16px 18px;
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.03);
+  position:relative;
+}
+.console::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:14px;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(255,255,255,.012) 0px,
+      rgba(255,255,255,.012) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  pointer-events:none;
+}
+.console-label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--paper-dim);
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.console-label .dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--bright-green);
+  box-shadow:0 0 6px var(--bright-green);
+}
+.counter-display{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  margin-bottom:14px;
+}
+.counter-digits{
+  display:flex;
+  gap:3px;
+}
+.digit-box{
+  background:#0B0805;
+  border:1px solid var(--brass-line-soft);
+  border-radius:4px;
+  padding:6px 4px;
+  min-width:22px;
+  text-align:center;
+  font-family:'IBM Plex Mono',monospace;
+  font-weight:700;
+  font-size:26px;
+  color:var(--amber);
+  box-shadow:var(--shadow-deep);
+  text-shadow:0 0 8px rgba(232,163,61,.4);
+}
+.counter-of{
+  font-family:'IBM Plex Mono',monospace;
+  color:var(--paper-dim);
+  font-size:15px;
+}
+.counter-caption{
+  font-size:12px;
+  color:var(--paper-dim);
+  margin-top:-8px;
+  margin-bottom:14px;
+}
+.vu-meter{
+  display:flex;
+  gap:2px;
+  height:16px;
+  margin-bottom:16px;
+}
+.vu-seg{
+  flex:1;
+  border-radius:1px;
+  background:#0B0805;
+  border:1px solid rgba(255,255,255,.03);
+}
+.vu-seg.on{
+  background:var(--amber);
+  box-shadow:0 0 4px rgba(232,163,61,.5);
+}
+.vu-seg.on.hot{
+  background:var(--bright-green);
+  box-shadow:0 0 4px rgba(79,211,135,.6);
+}
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.stat-cell{
+  background:var(--panel);
+  border:1px solid var(--brass-line-soft);
+  border-radius:8px;
+  padding:9px 8px;
+}
+.stat-num{
+  font-family:'IBM Plex Mono',monospace;
+  font-weight:700;
+  font-size:19px;
+}
+.stat-label{
+  font-size:9.5px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--paper-dim);
+  margin-top:2px;
+}
+.stat-cell.warn .stat-num{
+  color:var(--amber);
+}
+.stat-cell.reg .stat-num{
+  color:var(--bright-green);
+}
+/* ================= TOOLBAR ================= */
+.toolbar{
+  display:flex;
+  gap:8px;
+  margin-top:16px;
+}
+.search-wrap{
+  flex:1;
+  position:relative;
+}
+.search-wrap input{
+  width:100%;
+  background:var(--panel);
+  border:1px solid var(--brass-line-soft);
+  border-radius:9px;
+  padding:11px 12px 11px 34px;
+  color:var(--paper);
+  font-size:14px;
+}
+.search-wrap input:focus{
+  outline:none;
+  border-color:var(--amber);
+}
+.search-wrap svg{
+  position:absolute;
+  left:11px;
+  top:50%;
+  transform:translateY(-50%);
+  opacity:.5;
+}
+.btn-add{
+  background:var(--amber);
+  color:#14100D;
+  border:none;
+  border-radius:9px;
+  padding:0 16px;
+  font-weight:700;
+  font-size:13px;
+  font-family:'Space Grotesk',sans-serif;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.filter-row{
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  margin-top:10px;
+  padding-bottom:4px;
+  scrollbar-width:none;
+}
+.filter-row::-webkit-scrollbar{
+  display:none;
+}
+.chip{
+  flex-shrink:0;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  padding:6px 11px;
+  border-radius:20px;
+  border:1px solid var(--brass-line-soft);
+  color:var(--paper-dim);
+  background:var(--panel);
+  cursor:pointer;
+  white-space:nowrap;
+}
+.chip.active{
+  background:var(--amber);
+  color:#14100D;
+  border-color:var(--amber);
+  font-weight:700;
+}
+/* ================= SONG CARDS ================= */
+.song-list{
+  margin-top:14px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.song-card{
+  background:var(--panel);
+  border:1px solid var(--brass-line-soft);
+  border-radius:11px;
+  padding:12px 13px;
+  display:flex;
+  align-items:flex-start;
+  gap:11px;
+  cursor:pointer;
+  transition:border-color .15s;
+}
+.song-card:hover{
+  border-color:var(--brass-line);
+}
+.status-led{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  flex-shrink:0;
+  margin-top:4px;
+}
+.led-draft{
+  background:var(--amber);
+  box-shadow:0 0 5px var(--amber);
+}
+.led-lyrics{
+  background:var(--blue);
+  box-shadow:0 0 5px var(--blue);
+}
+.led-audio{
+  background:var(--violet);
+  box-shadow:0 0 5px var(--violet);
+}
+.led-ready{
+  background:var(--green);
+  box-shadow:0 0 5px var(--green);
+}
+.led-registered{
+  background:var(--bright-green);
+  box-shadow:0 0 6px var(--bright-green);
+}
+.song-card .info{
+  flex:1;
+  min-width:0;
+}
+.song-card .title{
+  font-weight:600;
+  font-size:14.5px;
+  color:var(--paper);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.song-card .meta{
+  font-size:11.5px;
+  color:var(--paper-dim);
+  margin-top:2px;
+}
+.status-pill{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  padding:4px 8px;
+  border-radius:5px;
+  flex-shrink:0;
+}
+.pill-draft{
+  background:rgba(232,163,61,.13);
+  color:var(--amber);
+}
+.pill-lyrics{
+  background:rgba(91,155,199,.15);
+  color:var(--blue);
+}
+.pill-audio{
+  background:rgba(159,114,190,.15);
+  color:var(--violet);
+}
+.pill-ready{
+  background:rgba(79,168,117,.18);
+  color:var(--green);
+}
+.pill-registered{
+  background:rgba(79,211,135,.16);
+  color:var(--bright-green);
+}
+/* ================= AUDIO MINI PLAYER ================= */
+.audio-mini{
+  margin-top:9px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.play-song-btn{
+  background:#0B0805;
+  color:var(--amber);
+  border:1px solid var(--brass-line);
+  border-radius:7px;
+  padding:6px 10px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  font-weight:700;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.play-song-btn.playing{
+  background:var(--amber);
+  color:#14100D;
+}
+.audio-label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;
+  color:var(--paper-dim);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+/* ================= OVERLAY ================= */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:var(--deck);
+  z-index:50;
+  display:none;
+  flex-direction:column;
+  overflow-y:auto;
+}
+.overlay.open{
+  display:flex;
+}
+.overlay-header{
+  position:sticky;
+  top:0;
+  background:var(--deck);
+  z-index:5;
+  border-bottom:1px solid var(--brass-line-soft);
+  padding:16px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.back-btn{
+  background:var(--panel);
+  border:1px solid var(--brass-line-soft);
+  color:var(--paper);
+  width:34px;
+  height:34px;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+.overlay-header h2{
+  font-size:16px;
+  margin:0;
+  flex:1;
+}
+.overlay-body{
+  padding:16px;
+  max-width:640px;
+  margin:0 auto;
+  width:100%;
+}
+/* ================= FORM ================= */
+.field{
+  margin-bottom:14px;
+}
+.field label{
+  display:block;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  color:var(--paper-dim);
+  margin-bottom:6px;
+}
+.field input,
+.field textarea{
+  width:100%;
+  background:var(--panel);
+  border:1px solid var(--brass-line-soft);
+  border-radius:8px;
+  padding:11px 12px;
+  color:var(--paper);
+  font-size:14px;
+  font-family:'Inter',sans-serif;
+}
+.field input:focus,
+.field textarea:focus{
+  outline:none;
+  border-color:var(--amber);
+}
+.field textarea{
+  min-height:100px;
+  resize:vertical;
+}
+.row2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.hint{
+  font-size:11px;
+  color:var(--paper-dim);
+  margin-top:5px;
+}
+/* ================= AUDIO UPLOAD ================= */
+.audio-box{
+  background:#0B0805;
+  border:1px dashed var(--brass-line);
+  border-radius:9px;
+  padding:12px;
+}
+.audio-box input[type=file]{
+  width:100%;
+  color:var(--paper-dim);
+  font-size:12px;
+}
+.audio-preview{
+  margin-top:10px;
+}
+.audio-preview audio{
+  width:100%;
+  height:38px;
+}
+.audio-detail{
+  background:#0B0805;
+  border:1px solid var(--brass-line-soft);
+  border-radius:9px;
+  padding:10px;
+}
+.audio-detail audio{
+  width:100%;
+  height:40px;
+}
+.now-playing{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  color:var(--paper-dim);
+  margin-top:7px;
+}
+/* ================= TOGGLES ================= */
+.toggle-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:var(--panel);
+  border:1px solid var(--brass-line-soft);
+  border-radius:8px;
+  padding:11px 13px;
+  margin-bottom:10px;
+}
+.toggle-row .lbl{
+  font-size:13.5px;
+}
+.toggle-row .sub{
+  display:block;
+  font-size:11px;
+  color:var(--paper-dim);
+  margin-top:1px;
+}
+.switch{
+  position:relative;
+  width:42px;
+  height:24px;
+}
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+.switch .track{
+  position:absolute;
+  inset:0;
+  background:#0B0805;
+  border:1px solid var(--brass-line-soft);
+  border-radius:20px;
+  cursor:pointer;
+}
+.switch .track::before{
+  content:'';
+  position:absolute;
+  width:16px;
+  height:16px;
+  left:3px;
+  top:2.5px;
+  background:var(--paper-dim);
+  border-radius:50%;
+  transition:.15s;
+}
+.switch input:checked + .track{
+  background:rgba(79,168,117,.35);
+  border-color:var(--green);
+}
+.switch input:checked + .track::before{
+  transform:translateX(18px);
+  background:var(--bright-green);
+}
+/* ================= SECTIONS ================= */
+.section-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-weight:700;
+  font-size:13.5px;
+  color:var(--amber);
+  margin:22px 0 12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.section-title::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:var(--brass-line-soft);
+}
+.checklist{
+  background:var(--panel);
+  border:1px solid var(--brass-line-soft);
+  border-radius:11px;
+  padding:6px 14px;
+}
+.check-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid var(--brass-line-soft);
+  font-size:13.5px;
+  color:var(--paper-dim);
+}
+.check-item:last-child{
+  border-bottom:none;
+}
+.check-box{
+  width:18px;
+  height:18px;
+  border-radius:4px;
+  border:1.5px solid var(--brass-line);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.check-box.done{
+  background:var(--bright-green);
+  border-color:var(--bright-green);
+}
+.check-box.done svg{
+  stroke:#0B0805;
+}
+.check-item.done-txt{
+  color:var(--paper);
+}
+/* ================= BUTTONS ================= */
+.btn-row{
+  display:flex;
+  gap:10px;
+  margin-top:22px;
+  padding-bottom:20px;
+}
+.btn-primary{
+  flex:1;
+  background:var(--amber);
+  color:#14100D;
+  border:none;
+  border-radius:9px;
+  padding:13px;
+  font-weight:700;
+  font-size:14px;
+  font-family:'Space Grotesk',sans-serif;
+  cursor:pointer;
+}
+.btn-danger{
+  background:transparent;
+  color:var(--red);
+  border:1px solid var(--red);
+  border-radius:9px;
+  padding:13px 16px;
+  font-weight:600;
+  font-size:13px;
+  cursor:pointer;
+}
+.role-note{
+  font-size:11.5px;
+  color:var(--paper-dim);
+  background:rgba(232,163,61,.08);
+  border:1px solid rgba(232,163,61,.25);
+  border-radius:8px;
+  padding:9px 11px;
+  margin-bottom:14px;
+}
+.empty-state{
+  text-align:center;
+  padding:50px 20px;
+  color:var(--paper-dim);
+}
+.empty-state h3{
+  color:var(--paper);
+  font-size:16px;
+  margin-bottom:6px;
+}
+.empty-state p{
+  font-size:13px;
+  margin-bottom:18px;
+}
+.toast{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--panel-raised);
+  border:1px solid var(--brass-line);
+  color:var(--paper);
+  padding:10px 18px;
+  border-radius:20px;
+  font-size:12.5px;
+  z-index:100;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  opacity:0;
+  transition:opacity .2s;
+  pointer-events:none;
+}
+.toast.show{
+  opacity:1;
+}
+@media(max-width:560px){
+  .row2{
+    grid-template-columns:1fr;
+    gap:0;
+  }
+  .stat-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+  .song-card{
+    padding:11px;
+  }
+  .status-pill{
+    font-size:8.5px;
+  }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand-row">
+<div class="brand">
+  <span class="eyebrow">
+    Registration Command Center
+  </span>
+  <h1>
+    Reel Ledger
+  </h1>
+  <span class="sub" id="roleSubtitle">
+    Master view — full control
+  </span>
+</div>
+<div class="role-toggle">
+  <button id="btnMaster" class="active">
+    Master
+  </button>
+  <button id="btnSon">
+    Son
+  </button>
+</div>
+  </div>
+</header>
+<main>
+  <!-- ================= DASHBOARD ================= -->
+  <div class="console">
+<div class="console-label">
+  <span class="dot"></span>
+  Command Center — Live Totals
+</div>
+<div class="counter-display">
+  <div class="counter-digits" id="digitsCompleted"></div>
+  <span class="counter-of mono" id="digitsTotal">
+    / 0 SONGS COMPLETED
+  </span>
+</div>
+<div class="counter-caption" id="progressCaption">
+  0% of catalog is registration-ready or beyond
+</div>
+<div class="vu-meter" id="vuMeter"></div>
+<div class="stat-grid">
+  <div class="stat-cell">
+    <div class="stat-num mono" id="statTotal">0</div>
+    <div class="stat-label">Total Songs</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num mono" id="statCompleted">0</div>
+    <div class="stat-label">Completed</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num mono" id="statReady">0</div>
+    <div class="stat-label">Ready to Register</div>
+  </div>
+  <div class="stat-cell reg">
+    <div class="stat-num mono" id="statRegistered">0</div>
+    <div class="stat-label">Registered</div>
+  </div>
+  <div class="stat-cell warn">
+    <div class="stat-num mono" id="statMissingLyrics">0</div>
+    <div class="stat-label">Missing Lyrics</div>
+  </div>
+  <div class="stat-cell warn">
+    <div class="stat-num mono" id="statMissingAudio">0</div>
+    <div class="stat-label">Missing Audio</div>
+  </div>
+</div>
+  </div>
+  <!-- ================= SEARCH ================= -->
+  <div class="toolbar">
+<div class="search-wrap">
+  <svg width="15" height="15"
+       viewBox="0 0 24 24"
+       fill="none"
+       stroke="#B8AC98"
+       stroke-width="2">
+    <circle cx="11" cy="11" r="7"/>
+    <line x1="21" y1="21"
+          x2="16.65" y2="16.65"/>
+  </svg>
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="Search title, artist, project…"
+  >
+</div>
+<button class="btn-add" id="btnNewSong">
+  + New Song
+</button>
+  </div>
+  <!-- ================= FILTERS ================= -->
+  <div class="filter-row" id="filterRow">
+<div class="chip active" data-filter="all">
+  All
+</div>
+<div class="chip" data-filter="draft">
+  Draft
+</div>
+<div class="chip" data-filter="lyrics">
+  Lyrics Complete
+</div>
+<div class="chip" data-filter="audio">
+  Audio Complete
+</div>
+<div class="chip" data-filter="ready">
+  Ready
+</div>
+<div class="chip" data-filter="registered">
+  Registered
+</div>
+<div class="chip" data-filter="missingLyrics">
+  Missing Lyrics
+</div>
+<div class="chip" data-filter="missingAudio">
+  Missing Audio
+</div>
+  </div>
+  <!-- ================= SONG LIST ================= -->
+  <div class="song-list" id="songList"></div>
+  <div class="empty-state" id="emptyState" style="display:none;">
+<h3>
+  No songs on the reel yet
+</h3>
+<p>
+  Add the first track to start tracking it toward registration.
+</p>
+<button class="btn-add" id="btnEmptyAdd">
+  + Add First Song
+</button>
+  </div>
+</main>
+<!-- ================= FULL SCREEN SONG VIEW ================= -->
+<div class="overlay" id="overlay">
+  <div class="overlay-header">
+<button class="back-btn" id="btnBack">
+  <svg width="18" height="18"
+       viewBox="0 0 24 24"
+       fill="none"
+       stroke="#F2E9DC"
+       stroke-width="2">
+    <path d="M15 18l-6-6 6-6"/>
+  </svg>
+</button>
+<h2 id="overlayTitle">
+  New Song
+</h2>
+  </div>
+  <div class="overlay-body" id="overlayBody"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+'use strict';
+/* =========================================================
+   STATUS SYSTEM
+========================================================= */
+var STATUS = {
+  draft:{
+    label:'Draft',
+    led:'led-draft',
+    pill:'pill-draft'
+  },
+  lyrics:{
+    label:'Lyrics Complete',
+    led:'led-lyrics',
+    pill:'pill-lyrics'
+  },
+  audio:{
+    label:'Audio Complete',
+    led:'led-audio',
+    pill:'pill-audio'
+  },
+  ready:{
+    label:'Ready to Register',
+    led:'led-ready',
+    pill:'pill-ready'
+  },
+  registered:{
+    label:'Registered',
+    led:'led-registered',
+    pill:'pill-registered'
+  }
+};
+/* =========================================================
+   STATE
+========================================================= */
+var state = {
+  songs:[],
+  role:'master',
+  filter:'all',
+  search:'',
+  editingId:null
+};
+var activeAudio = null;
+var activePlayButton = null;
+/* =========================================================
+   ELEMENTS
+========================================================= */
+var els = {
+  songList:document.getElementById('songList'),
+  emptyState:document.getElementById('emptyState'),
+  overlay:document.getElementById('overlay'),
+  overlayBody:document.getElementById('overlayBody'),
+  overlayTitle:document.getElementById('overlayTitle'),
+  toast:document.getElementById('toast'),
+  roleSubtitle:document.getElementById('roleSubtitle')
+};
+/* =========================================================
+   ID
+========================================================= */
+function uid(){
+  return 'song_' +
+    Date.now().toString(36) +
+    Math.random().toString(36).slice(2,8);
+}
+/* =========================================================
+   TOAST
+========================================================= */
+function showToast(message){
+  els.toast.textContent = message;
+  els.toast.classList.add('show');
+  setTimeout(function(){
+    els.toast.classList.remove('show');
+  },1800);
+}
+/* =========================================================
+   STORAGE
+========================================================= */
+async function loadSongs(){
+  try{
+    var result =
+      await window.storage.get(
+        'songs-catalog',
+        true
+      );
+    if(result && result.value){
+      state.songs =
+        JSON.parse(result.value);
+    }
+  }catch(error){
+    state.songs = [];
+  }
+  render();
+}
+async function saveSongs(){
+  try{
+    await window.storage.set(
+      'songs-catalog',
+      JSON.stringify(state.songs),
+      true
+    );
+  }catch(error){
+    showToast(
+      'Storage unavailable — changes may not persist'
+    );
+  }
+}
+/* =========================================================
+   CHECKLIST
+========================================================= */
+function checklistFor(song){
+  return [
+    {
+      label:'Song title',
+      done:!!(
+        song.title &&
+        song.title.trim()
+      )
+    },
+    {
+      label:'Description',
+      done:!!(
+        song.description &&
+        song.description.trim()
+      )
+    },
+    {
+      label:'Complete lyrics',
+      done:!!song.lyricsComplete
+    },
+    {
+      label:'Final audio',
+      done:!!song.audioComplete
+    },
+    {
+      label:'Artist information',
+      done:!!(
+        song.artist &&
+        song.artist.trim()
+      )
+    },
+    {
+      label:'Creation date',
+      done:!!song.dateCreated
+    },
+    {
+      label:'Suno information',
+      done:!!(
+        song.sunoLink &&
+        song.sunoLink.trim()
+      )
+    },
+    {
+      label:'Registration submitted',
+      done:!!song.registrationSubmitted
+    },
+    {
+      label:'Registration number entered',
+      done:!!(
+        song.registrationNumber &&
+        song.registrationNumber.trim()
+      )
+    }
+  ];
+}
+/* =========================================================
+   COMPLETION
+========================================================= */
+function coreComplete(song){
+  return [
+    !!(song.title && song.title.trim()),
+    !!(song.description && song.description.trim()),
+    !!song.lyricsComplete,
+    !!song.audioComplete,
+    !!(song.artist && song.artist.trim()),
+    !!song.dateCreated,
+    !!(song.sunoLink && song.sunoLink.trim())
+  ].every(Boolean);
+}
+/* =========================================================
+   STATUS
+========================================================= */
+function deriveStatus(song){
+  if(
+    song.registrationSubmitted &&
+    song.registrationNumber &&
+    song.registrationNumber.trim()
+  ){
+    return 'registered';
+  }
+  if(coreComplete(song)){
+    return 'ready';
+  }
+  if(song.audioComplete){
+    return 'audio';
+  }
+  if(song.lyricsComplete){
+    return 'lyrics';
+  }
+  return 'draft';
+}
+/* =========================================================
+   TOTALS
+========================================================= */
+function computeTotals(){
+  var total =
+    state.songs.length;
+  var completed = 0;
+  var ready = 0;
+  var registered = 0;
+  var missingLyrics = 0;
+  var missingAudio = 0;
+  state.songs.forEach(function(song){
+    var status =
+      deriveStatus(song);
+    if(coreComplete(song))
+      completed++;
+    if(status === 'ready')
+      ready++;
+    if(status === 'registered')
+      registered++;
+    if(!song.lyricsComplete)
+      missingLyrics++;
+    if(!song.audioComplete)
+      missingAudio++;
+  });
+  return {
+    total:total,
+    completed:completed,
+    ready:ready,
+    registered:registered,
+    missingLyrics:missingLyrics,
+    missingAudio:missingAudio
+  };
+}
+/* =========================================================
+   DASHBOARD
+========================================================= */
+function renderDigits(){
+  var total =
+    computeTotals();
+  var box =
+    document.getElementById(
+      'digitsCompleted'
+    );
+  box.innerHTML = '';
+  var value =
+    String(total.completed)
+      .padStart(2,'0');
+  for(
+    var i=0;
+    i<value.length;
+    i++
+  ){
+    var digit =
+      document.createElement('div');
+    digit.className =
+      'digit-box';
+    digit.textContent =
+      value[i];
+    box.appendChild(digit);
+  }
+  document.getElementById(
+    'digitsTotal'
+  ).textContent =
+    '/ ' +
+    total.total +
+    ' SONGS COMPLETED';
+  var percent =
+    total.total
+    ? Math.round(
+        total.completed /
+        total.total *
+        100
+      )
+    : 0;
+  document.getElementById(
+    'progressCaption'
+  ).textContent =
+    percent +
+    '% of catalog is registration-ready or beyond';
+  var meter =
+    document.getElementById(
+      'vuMeter'
+    );
+  meter.innerHTML = '';
+  var segments = 24;
+  var lit =
+    total.total
+    ? Math.round(
+        total.completed /
+        total.total *
+        segments
+      )
+    : 0;
+  for(
+    var x=0;
+    x<segments;
+    x++
+  ){
+    var segment =
+      document.createElement('div');
+    segment.className =
+      'vu-seg';
+    if(x < lit){
+      segment.classList.add('on');
+      if(x >= segments*.75)
+        segment.classList.add('hot');
+    }
+    meter.appendChild(segment);
+  }
+  document.getElementById(
+    'statTotal'
+  ).textContent =
+    total.total;
+  document.getElementById(
+    'statCompleted'
+  ).textContent =
+    total.completed;
+  document.getElementById(
+    'statReady'
+  ).textContent =
+    total.ready;
+  document.getElementById(
+    'statRegistered'
+  ).textContent =
+    total.registered;
+  document.getElementById(
+    'statMissingLyrics'
+  ).textContent =
+    total.missingLyrics;
+  document.getElementById(
+    'statMissingAudio'
+  ).textContent =
+    total.missingAudio;
+}
+/* =========================================================
+   SEARCH
+========================================================= */
+function matchesSearch(song){
+  if(!state.search)
+    return true;
+  var query =
+    state.search.toLowerCase();
+  return (
+    (song.title || '')
+      .toLowerCase()
+      .includes(query)
+    ||
+    (song.artist || '')
+      .toLowerCase()
+      .includes(query)
+    ||
+    (song.project || '')
+      .toLowerCase()
+      .includes(query)
+  );
+}
+/* =========================================================
+   FILTER
+========================================================= */
+function matchesFilter(song){
+  var status =
+    deriveStatus(song);
+  switch(state.filter){
+    case 'draft':
+      return status === 'draft';
+    case 'lyrics':
+      return status === 'lyrics';
+    case 'audio':
+      return status === 'audio';
+    case 'ready':
+      return status === 'ready';
+    case 'registered':
+      return status === 'registered';
+    case 'missingLyrics':
+      return !song.lyricsComplete;
+    case 'missingAudio':
+      return !song.audioComplete;
+    default:
+      return true;
+  }
+}
+/* =========================================================
+   AUDIO PLAYER
+========================================================= */
+function playSong(
+  url,
+  title,
+  button
+){
+  if(!url){
+    showToast(
+      'No playable audio attached'
+    );
+    return;
+  }
+  if(activeAudio){
+    activeAudio.pause();
+    activeAudio.currentTime = 0;
+  }
+  if(activePlayButton){
+    activePlayButton.textContent =
+      '▶ PLAY';
+    activePlayButton.classList.remove(
+      'playing'
+    );
+  }
+  activeAudio =
+    new Audio(url);
+  activePlayButton =
+    button;
+  activeAudio.play()
+    .then(function(){
+      button.textContent =
+        '❚❚ PAUSE';
+      button.classList.add(
+        'playing'
+      );
+      showToast(
+        'Playing: ' + title
+      );
+    })
+    .catch(function(){
+      showToast(
+        'Audio could not be played'
+      );
+    });
+  activeAudio.addEventListener(
+    'ended',
+    function(){
+      button.textContent =
+        '▶ PLAY';
+      button.classList.remove(
+        'playing'
+      );
+      activeAudio = null;
+      activePlayButton = null;
+    }
+  );
+}
+/* =========================================================
+   SONG LIST
+========================================================= */
+function renderList(){
+  var filtered =
+    state.songs
+      .filter(matchesFilter)
+      .filter(matchesSearch);
+  els.songList.innerHTML = '';
+  if(filtered.length === 0){
+    els.emptyState.style.display =
+      'block';
+    if(state.songs.length){
+      els.emptyState
+        .querySelector('h3')
+        .textContent =
+        'No matches';
+      els.emptyState
+        .querySelector('p')
+        .textContent =
+        'Try a different search or filter.';
+      document.getElementById(
+        'btnEmptyAdd'
+      ).style.display =
+        'none';
+    }else{
+      els.emptyState
+        .querySelector('h3')
+        .textContent =
+        'No songs on the reel yet';
+      els.emptyState
+        .querySelector('p')
+        .textContent =
+        'Add the first track to start tracking it toward registration.';
+      document.getElementById(
+        'btnEmptyAdd'
+      ).style.display =
+        'inline-block';
+    }
+    return;
+  }
+  els.emptyState.style.display =
+    'none';
+  filtered
+    .slice()
+    .sort(function(a,b){
+      return (
+        b.dateCreated || ''
+      ).localeCompare(
+        a.dateCreated || ''
+      );
+    })
+    .forEach(function(song){
+      var status =
+        deriveStatus(song);
+      var meta =
+        STATUS[status];
+      var card =
+        document.createElement('div');
+      card.className =
+        'song-card';
+      card.innerHTML =
+        '<div class="status-led ' +
+          meta.led +
+        '"></div>' +
+        '<div class="info">' +
+          '<div class="title">' +
+            escapeHtml(
+              song.title ||
+              'Untitled'
+            ) +
+          '</div>' +
+          '<div class="meta">' +
+            escapeHtml(
+              song.artist ||
+              '—'
+            ) +
+            (
+              song.project
+              ? ' · ' +
+                escapeHtml(
+                  song.project
+                )
+              : ''
+            ) +
+          '</div>' +
+          (
+            song.audioUrl
+            ?
+            '<div class="audio-mini">' +
+              '<button ' +
+                'class="play-song-btn" ' +
+                'data-audio="' +
+                escapeHtml(
+                  song.audioUrl
+                ) +
+                '" ' +
+                'data-title="' +
+                escapeHtml(
+                  song.title ||
+                  'Untitled'
+                ) +
+                '">' +
+                '▶ PLAY' +
+              '</button>' +
+              '<span class="audio-label">' +
+                escapeHtml(
+                  song.audioFileName ||
+                  'Audio attached'
+                ) +
+              '</span>' +
+            '</div>'
+            :
+            ''
+          ) +
+        '</div>' +
+        '<div class="status-pill ' +
+          meta.pill +
+        '">' +
+          meta.label +
+        '</div>';
+      var playButton =
+        card.querySelector(
+          '.play-song-btn'
+        );
+      if(playButton){
+        playButton.addEventListener(
+          'click',
+          function(event){
+            event.stopPropagation();
+            playSong(
+              playButton
+                .getAttribute(
+                  'data-audio'
+                ),
+              playButton
+                .getAttribute(
+                  'data-title'
+                ),
+              playButton
+            );
+          }
+        );
+      }
+      card.addEventListener(
+        'click',
+        function(){
+          openDetail(
+            song.id
+          );
+        }
+      );
+      els.songList.appendChild(card);
+    });
+}
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+function escapeHtml(value){
+  var div =
+    document.createElement('div');
+  div.textContent =
+    value || '';
+  return div.innerHTML;
+}
+/* =========================================================
+   RENDER
+========================================================= */
+function render(){
+  renderDigits();
+  renderList();
+}
+/* =========================================================
+   ROLE
+========================================================= */
+function setRole(role){
+  state.role =
+    role;
+  document.getElementById(
+    'btnMaster'
+  ).classList.toggle(
+    'active',
+    role === 'master'
+  );
+  document.getElementById(
+    'btnSon'
+  ).classList.toggle(
+    'active',
+    role === 'son'
+  );
+  els.roleSubtitle.textContent =
+    role === 'master'
+    ? 'Master view — full control'
+    : 'Son view — organize & verify';
+}
+/* =========================================================
+   ROLE BUTTONS
+========================================================= */
+document.getElementById(
+  'btnMaster'
+).addEventListener(
+  'click',
+  function(){
+    setRole('master');
+  }
+);
+document.getElementById(
+  'btnSon'
+).addEventListener(
+  'click',
+  function(){
+    setRole('son');
+  }
+);
+/* =========================================================
+   SEARCH
+========================================================= */
+document.getElementById(
+  'searchInput'
+).addEventListener(
+  'input',
+  function(event){
+    state.search =
+      event.target.value;
+    renderList();
+  }
+);
+/* =========================================================
+   FILTERS
+========================================================= */
+document.getElementById(
+  'filterRow'
+).addEventListener(
+  'click',
+  function(event){
+    var chip =
+      event.target.closest(
+        '.chip'
+      );
+    if(!chip)
+      return;
+    document
+      .querySelectorAll(
+        '#filterRow .chip'
+      )
+      .forEach(
+        function(item){
+          item.classList.remove(
+            'active'
+          );
+        }
+      );
+    chip.classList.add(
+      'active'
+    );
+    state.filter =
+      chip.getAttribute(
+        'data-filter'
+      );
+    renderList();
+  }
+);
+/* =========================================================
+   OVERLAY
+========================================================= */
+function openOverlay(title){
+  els.overlayTitle.textContent =
+    title;
+  els.overlay.classList.add(
+    'open'
+  );
+  window.scrollTo(
+    0,
+    0
+  );
+}
+function closeOverlay(){
+  els.overlay.classList.remove(
+    'open'
+  );
+  state.editingId =
+    null;
+}
+document.getElementById(
+  'btnBack'
+).addEventListener(
+  'click',
+  closeOverlay
+);
+/* =========================================================
+   BLANK SONG
+========================================================= */
+function blankSong(){
+  return {
+    id:uid(),
+    title:'',
+    artist:'',
+    project:'',
+    dateCreated:'',
+    sunoLink:'',
+    audioFileNote:'',
+    audioFileName:'',
+    audioUrl:'',
+    version:'',
+    description:'',
+    lyrics:'',
+    lyricsComplete:false,
+    audioComplete:false,
+    registrationSubmitted:false,
+    registrationNumber:'',
+    registrationDate:'',
+    notes:''
+  };
+}
+/* =========================================================
+   NEW SONG
+========================================================= */
+function openForm(songId){
+  var isEdit =
+    !!songId;
+  var song =
+    isEdit
+    ? state.songs.find(
+        function(item){
+          return item.id === songId;
+        }
+      )
+    : blankSong();
+  state.editingId =
+    song.id;
+  var isMaster =
+    state.role === 'master';
+  openOverlay(
+    isEdit
+    ? 'Edit Song'
+    : 'New Song'
+  );
+  els.overlayBody.innerHTML =
+    '<div class="field">' +
+      '<label>Song Title *</label>' +
+      '<input ' +
+        'type="text" ' +
+        'id="f_title" ' +
+        'placeholder="Song title">' +
+    '</div>' +
+    '<div class="row2">' +
+      '<div class="field">' +
+        '<label>Artist</label>' +
+        '<input ' +
+          'type="text" ' +
+          'id="f_artist" ' +
+          'placeholder="Artist name">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Project / Album</label>' +
+        '<input ' +
+          'type="text" ' +
+          'id="f_project" ' +
+          'placeholder="Project name">' +
+      '</div>' +
+    '</div>' +
+    '<div class="row2">' +
+      '<div class="field">' +
+        '<label>Date Created</label>' +
+        '<input ' +
+          'type="date" ' +
+          'id="f_dateCreated">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Version</label>' +
+        '<input ' +
+          'type="text" ' +
+          'id="f_version" ' +
+          'placeholder="v1, v2, Final">' +
+      '</div>' +
+    '</div>' +
+    '<div class="field">' +
+      '<label>Suno Link / Information</label>' +
+      '<input ' +
+        'type="url" ' +
+        'id="f_sunoLink" ' +
+        'placeholder="https://suno.com/song/...">' +
+    '</div>' +
+    '<div class="section-title">' +
+      'Audio' +
+    '</div>' +
+    '<div class="field">' +
+      '<label>Audio URL</label>' +
+      '<input ' +
+        'type="url" ' +
+        'id="f_audioUrl" ' +
+        'placeholder="Permanent MP3/WAV URL">' +
+      '<div class="hint">' +
+        'Best option for permanent playback. ' +
+        'Firebase Storage or Supabase Storage can be connected later.' +
+      '</div>' +
+    '</div>' +
+    '<div class="field">' +
+      '<label>Choose Audio File</label>' +
+      '<div class="audio-box">' +
+        '<input ' +
+          'type="file" ' +
+          'id="f_audioFile" ' +
+          'accept="audio/*">' +
+        '<div class="hint">' +
+          'Select an MP3, WAV, M4A or other browser-supported audio file.' +
+        '</div>' +
+        '<div ' +
+          'class="audio-preview" ' +
+          'id="f_audioPreview">' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="field">' +
+      '<label>Audio File Name / Note</label>' +
+      '<input ' +
+        'type="text" ' +
+        'id="f_audioFileNote" ' +
+        'placeholder="Final mix, demo, master, etc.">' +
+    '</div>' +
+    '<div class="field">' +
+      '<label>Song Description</label>' +
+      '<textarea ' +
+        'id="f_description" ' +
+        'placeholder="What is this song about?">' +
+      '</textarea>' +
+'</div>' +
+'<div class="field">' +
+  '<label>Complete Song Lyrics</label>' +
+  '<textarea ' +
+    'id="f_lyrics" ' +
+    'placeholder="Paste the complete lyrics here...">' +
+  '</textarea>' +
+'</div>' +
+'<div class="section-title">' +
+  'Completion Checklist' +
+'</div>' +
+'<div class="toggle-row">' +
+  '<div class="lbl">' +
+    'Complete Lyrics' +
+    '<span class="sub">' +
+      'Lyrics are finished and final' +
+    '</span>' +
+  '</div>' +
+  '<label class="switch">' +
+    '<input ' +
+      'type="checkbox" ' +
+      'id="f_lyricsComplete">' +
+    '<span class="track"></span>' +
+  '</label>' +
+'</div>' +
+'<div class="toggle-row">' +
+  '<div class="lbl">' +
+    'Final Audio' +
+    '<span class="sub">' +
+      'Final song audio is ready' +
+    '</span>' +
+  '</div>' +
+  '<label class="switch">' +
+    '<input ' +
+      'type="checkbox" ' +
+      'id="f_audioComplete">' +
+    '<span class="track"></span>' +
+  '</label>' +
+'</div>' +
+'<div class="section-title">' +
+  'Registration' +
+'</div>' +
+(
+  isMaster
+  ? ''
+  :
+  '<div class="role-note">' +
+    'Son view: organize the song and make sure the file is complete. ' +
+    'Master view handles registration information.' +
+  '</div>'
+) +
+'<div class="toggle-row">' +
+  '<div class="lbl">' +
+    'Registration Submitted' +
+    '<span class="sub">' +
+      'Registration has been filed' +
+    '</span>' +
+  '</div>' +
+  '<label class="switch">' +
+    '<input ' +
+      'type="checkbox" ' +
+      'id="f_registrationSubmitted" ' +
+      (
+        isMaster
+        ? ''
+        : 'disabled'
+      ) +
+    '>' +
+    '<span class="track"></span>' +
+  '</label>' +
+'</div>' +
+'<div class="field">' +
+  '<label>Registration Number</label>' +
+  '<input ' +
+    'type="text" ' +
+    'id="f_registrationNumber" ' +
+    'placeholder="Registration number" ' +
+    (
+      isMaster
+      ? ''
+      : 'disabled'
+    ) +
+  '>' +
+'</div>' +
+'<div class="field">' +
+  '<label>Registration Date</label>' +
+  '<input ' +
+    'type="date" ' +
+    'id="f_registrationDate" ' +
+    (
+      isMaster
+      ? ''
+      : 'disabled'
+    ) +
+  '>' +
+'</div>' +
+'<div class="field">' +
+  '<label>Notes</label>' +
+  '<textarea ' +
+    'id="f_notes" ' +
+    'placeholder="Anything else worth tracking...">' +
+  '</textarea>' +
+'</div>' +
+'<div class="btn-row">' +
+  '<button ' +
+    'class="btn-primary" ' +
+    'id="f_save">' +
+    'Save Song' +
+  '</button>' +
+  (
+    isEdit
+    ?
+    '<button ' +
+      'class="btn-danger" ' +
+      'id="f_delete">' +
+      'Delete' +
+    '</button>'
+    : ''
+  ) +
+'</div>';
+
+/* ================= POPULATE ================= */
+
+var fields = [
+
+'title',
+'artist',
+'project',
+'dateCreated',
+'version',
+'sunoLink',
+'audioUrl',
+'audioFileNote',
+'description',
+'lyrics',
+'registrationNumber',
+'registrationDate',
+'notes'
+
+];
+
+fields.forEach(function(key){
+
+var field =
+  document.getElementById(
+    'f_' + key
+  );
+if(field)
+  field.value =
+    song[key] || '';
+
+});
+
+document.getElementById(
+‘f_lyricsComplete’
+).checked =
+!!song.lyricsComplete;
+
+document.getElementById(
+‘f_audioComplete’
+).checked =
+!!song.audioComplete;
+
+document.getElementById(
+‘f_registrationSubmitted’
+).checked =
+!!song.registrationSubmitted;
+
+/* ================= EXISTING AUDIO ================= */
+
+var preview =
+document.getElementById(
+‘f_audioPreview’
+);
+
+if(song.audioUrl){
+
+preview.innerHTML =
+  '<audio ' +
+    'controls ' +
+    'preload="metadata" ' +
+    'src="' +
+      escapeHtml(
+        song.audioUrl
+      ) +
+    '">' +
+  '</audio>';
+
+}
+
+/* ================= LOCAL FILE ================= */
+
+document.getElementById(
+‘f_audioFile’
+).addEventListener(
+‘change’,
+function(event){
+
+  var file =
+    event.target.files[0];
+  if(!file)
+    return;
+  var localUrl =
+    URL.createObjectURL(
+      file
+    );
+  song.audioUrl =
+    localUrl;
+  song.audioFileName =
+    file.name;
+  song.audioFileNote =
+    file.name;
+  song.audioComplete =
+    true;
+  document.getElementById(
+    'f_audioComplete'
+  ).checked =
+    true;
+  preview.innerHTML =
+    '<audio ' +
+      'controls ' +
+      'preload="metadata" ' +
+      'src="' +
+        localUrl +
+      '">' +
+    '</audio>';
+  document.getElementById(
+    'f_audioFileNote'
+  ).value =
+    file.name;
+  showToast(
+    'Audio loaded — press play'
+  );
+}
+
+);
+
+/* ================= SAVE ================= */
+
+document.getElementById(
+‘f_save’
+).addEventListener(
+‘click’,
+function(){
+
+  var title =
+    document.getElementById(
+      'f_title'
+    ).value.trim();
+  if(!title){
+    showToast(
+      'Song title is required'
+    );
+    return;
+  }
+  song.title =
+    title;
+  song.artist =
+    document.getElementById(
+      'f_artist'
+    ).value.trim();
+  song.project =
+    document.getElementById(
+      'f_project'
+    ).value.trim();
+  song.dateCreated =
+    document.getElementById(
+      'f_dateCreated'
+    ).value;
+  song.version =
+    document.getElementById(
+      'f_version'
+    ).value.trim();
+  song.sunoLink =
+    document.getElementById(
+      'f_sunoLink'
+    ).value.trim();
+  var typedAudioUrl =
+    document.getElementById(
+      'f_audioUrl'
+    ).value.trim();
+  if(typedAudioUrl){
+    song.audioUrl =
+      typedAudioUrl;
+  }
+  song.audioFileNote =
+    document.getElementById(
+      'f_audioFileNote'
+    ).value.trim();
+  song.description =
+    document.getElementById(
+      'f_description'
+    ).value.trim();
+  song.lyrics =
+    document.getElementById(
+      'f_lyrics'
+    ).value.trim();
+  song.lyricsComplete =
+    document.getElementById(
+      'f_lyricsComplete'
+    ).checked;
+  song.audioComplete =
+    document.getElementById(
+      'f_audioComplete'
+    ).checked;
+  song.notes =
+    document.getElementById(
+      'f_notes'
+    ).value.trim();
+  if(isMaster){
+    song.registrationSubmitted =
+      document.getElementById(
+        'f_registrationSubmitted'
+      ).checked;
+    song.registrationNumber =
+      document.getElementById(
+        'f_registrationNumber'
+      ).value.trim();
+    song.registrationDate =
+      document.getElementById(
+        'f_registrationDate'
+      ).value;
+  }
+  if(!isEdit){
+    state.songs.push(
+      song
+    );
+  }
+  saveSongs();
+  render();
+  closeOverlay();
+  showToast(
+    isEdit
+    ? 'Song updated'
+    : 'Song added'
+  );
+}
+
+);
+
+/* ================= DELETE ================= */
+
+var deleteButton =
+document.getElementById(
+‘f_delete’
+);
+
+if(deleteButton){
+
+deleteButton.addEventListener(
+  'click',
+  function(){
+    if(!confirm(
+      'Remove "' +
+      song.title +
+      '" from the catalog?'
+    ))
+      return;
+    state.songs =
+      state.songs.filter(
+        function(item){
+          return item.id !== song.id;
+        }
+      );
+    saveSongs();
+    render();
+    closeOverlay();
+    showToast(
+      'Song removed'
+    );
+  }
+);
+
+}
+
+}
+
+/* =========================================================
+DETAIL VIEW
+========================================================= */
+
+function openDetail(songId){
+
+var song =
+state.songs.find(
+function(item){
+return item.id === songId;
+}
+);
+
+if(!song)
+return;
+
+var status =
+deriveStatus(song);
+
+var meta =
+STATUS[status];
+
+var checklist =
+checklistFor(song);
+
+var doneCount =
+checklist.filter(
+function(item){
+return item.done;
+}
+).length;
+
+openOverlay(
+song.title ||
+‘Untitled’
+);
+
+var audioSection =
+
+song.audioUrl
+?
+'<div class="audio-detail">' +
+  '<audio ' +
+    'controls ' +
+    'preload="metadata" ' +
+    'src="' +
+      escapeHtml(
+        song.audioUrl
+      ) +
+    '">' +
+  '</audio>' +
+  '<div class="now-playing">' +
+    escapeHtml(
+      song.audioFileName ||
+      song.audioFileNote ||
+      'Audio attached'
+    ) +
+  '</div>' +
+'</div>'
+:
+'<div class="audio-detail">' +
+  '<div style="font-size:12px;color:var(--paper-dim);">' +
+    'No playable audio attached yet.' +
+  '</div>' +
+'</div>';
+
+els.overlayBody.innerHTML =
+
+'<div class="status-banner" ' +
+  'style="background:rgba(79,168,117,.12);color:var(--green);">' +
+  '<div class="status-led ' +
+    meta.led +
+  '"></div>' +
+  meta.label +
+'</div>' +
+'<div class="section-title">' +
+  'Song Information' +
+'</div>' +
+'<div class="field">' +
+  '<label>Artist</label>' +
+  '<div style="font-size:14px;">' +
+    escapeHtml(
+      song.artist ||
+      '—'
+    ) +
+  '</div>' +
+'</div>' +
+'<div class="row2">' +
+  '<div class="field">' +
+    '<label>Project / Album</label>' +
+    '<div style="font-size:14px;">' +
+      escapeHtml(
+        song.project ||
+        '—'
+      ) +
+    '</div>' +
+  '</div>' +
+  '<div class="field">' +
+    '<label>Version</label>' +
+    '<div style="font-size:14px;">' +
+      escapeHtml(
+        song.version ||
+        '—'
+      ) +
+    '</div>' +
+  '</div>' +
+'</div>' +
+'<div class="field">' +
+  '<label>Suno Link</label>' +
+  (
+    song.sunoLink
+    ?
+    '<a href="' +
+      escapeHtml(
+        song.sunoLink
+      ) +
+      '" target="_blank" rel="noopener">' +
+      escapeHtml(
+        song.sunoLink
+      ) +
+    '</a>'
+    :
+    '<span style="color:var(--paper-dim);">—</span>'
+  ) +
+'</div>' +
+'<div class="section-title">' +
+  'Listen' +
+'</div>' +
+audioSection +
+(
+  song.description
+  ?
+  '<div class="section-title">' +
+    'Description' +
+  '</div>' +
+  '<div style="font-size:13.5px;color:var(--paper-dim);line-height:1.6;">' +
+    escapeHtml(
+      song.description
+    ) +
+  '</div>'
+  :
+  ''
+) +
+(
+  song.lyrics
+  ?
+  '<div class="section-title">' +
+    'Lyrics' +
+  '</div>' +
+  '<div style="background:#0B0805;border:1px solid var(--brass-line-soft);border-radius:9px;padding:14px;font-size:13px;line-height:1.65;white-space:pre-wrap;color:var(--paper);">' +
+    escapeHtml(
+      song.lyrics
+    ) +
+  '</div>'
+  :
+  ''
+) +
+'<div class="section-title">' +
+  'Completion Checklist — ' +
+  doneCount +
+  ' / ' +
+  checklist.length +
+'</div>' +
+'<div class="checklist">' +
+  checklist.map(
+    function(item){
+      return (
+        '<div class="check-item ' +
+          (
+            item.done
+            ? 'done-txt'
+            : ''
+          ) +
+        '">' +
+          '<div class="check-box ' +
+            (
+              item.done
+              ? 'done'
+              : ''
+            ) +
+          '">' +
+            (
+              item.done
+              ?
+              '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="3">' +
+                '<path d="M20 6L9 17l-5-5"/>' +
+              '</svg>'
+              :
+              ''
+            ) +
+          '</div>' +
+          item.label +
+        '</div>'
+      );
+    }
+  ).join('') +
+'</div>' +
+(
+  song.registrationNumber
+  ?
+  '<div class="section-title">' +
+    'Registration' +
+  '</div>' +
+  '<div class="field">' +
+    '<label>Registration Number</label>' +
+    '<div class="mono">' +
+      escapeHtml(
+        song.registrationNumber
+      ) +
+    '</div>' +
+  '</div>' +
+  '<div class="field">' +
+    '<label>Registration Date</label>' +
+    '<div>' +
+      escapeHtml(
+        song.registrationDate ||
+        '—'
+      ) +
+    '</div>' +
+  '</div>'
+  :
+  ''
+) +
+(
+  song.notes
+  ?
+  '<div class="section-title">' +
+    'Notes' +
+  '</div>' +
+  '<div style="font-size:13px;color:var(--paper-dim);line-height:1.6;">' +
+    escapeHtml(
+      song.notes
+    ) +
+  '</div>'
+  :
+  ''
+) +
+'<div class="btn-row">' +
+  '<button ' +
+    'class="btn-primary" ' +
+    'id="d_edit">' +
+    'Edit Song' +
+  '</button>' +
+'</div>';
+
+document.getElementById(
+‘d_edit’
+).addEventListener(
+‘click’,
+function(){
+
+  openForm(
+    song.id
+  );
+}
+
+);
+
+}
+
+/* =========================================================
+BUTTONS
+========================================================= */
+
+document.getElementById(
+‘btnNewSong’
+).addEventListener(
+‘click’,
+function(){
+
+openForm(null);
+
+}
+);
+
+document.getElementById(
+‘btnEmptyAdd’
+).addEventListener(
+‘click’,
+function(){
+
+openForm(null);
+
+}
+);
+
+/* =========================================================
+INITIALIZE
+========================================================= */
+
+loadSongs();
+
+})();
+
+</script>
+</body>
+</html>
