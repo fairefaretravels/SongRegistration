@@ -7,31 +7,53 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
+/* =========================================================
+   PRESS DESK / COMMAND CENTER — MATCHED THEME
+   ========================================================= */
 :root{
-  --deck:#14100D;
-  --panel:#1E1812;
-  --panel-raised:#241D16;
-  --brass-line:#5A4A38;
-  --brass-line-soft:#3A3025;
-  --paper:#F2E9DC;
-  --paper-dim:#B8AC98;
-  --amber:#E8A33D;
-  --blue:#5B9BC7;
-  --violet:#9F72BE;
-  --green:#4FA875;
-  --bright-green:#4FD387;
-  --red:#C1443C;
-  --shadow-deep:inset 0 2px 6px rgba(0,0,0,.55),
-                0 1px 0 rgba(255,255,255,.03);
+  --deck:#150d07;
+  --panel:#201408;
+  --panel-raised:#2a1c0e;
+  --brass-line:#43301a;
+  --brass-line-soft:#362512;
+  --paper:#F4E9D6;
+  --paper-dim:#B8A582;
+  --amber:#D9A441;
+  --amber-bright:#F2C25E;
+  --amber-dim:#8A6A2E;
+  --blue:#5C95D9;
+  --violet:#AB84E0;
+  --green:#55C17E;
+  --bright-green:#55C17E;
+  --red:#E2584F;
+  --shadow-deep:
+    inset 0 2px 6px rgba(0,0,0,.55),
+    0 1px 0 rgba(255,255,255,.03);
 }
-*{box-sizing:border-box}
-html,body{
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+html,
+body{
   margin:0;
   padding:0;
 }
 body{
   background:
-    radial-gradient(ellipse at top,#1c1611 0%,var(--deck) 55%);
+    radial-gradient(
+      1200px 600px at 50% -10%,
+      rgba(217,164,65,.07),
+      transparent 60%
+    ),
+    repeating-linear-gradient(
+      180deg,
+      rgba(255,255,255,.012) 0px,
+      rgba(255,255,255,.012) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    var(--deck);
   color:var(--paper);
   font-family:'Inter',sans-serif;
   min-height:100vh;
@@ -39,10 +61,13 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 ::selection{
-  background:var(--amber);
-  color:#14100D;
+  background:var(--amber-dim);
+  color:var(--paper);
 }
-h1,h2,h3,.display{
+h1,
+h2,
+h3,
+.display{
   font-family:'Space Grotesk',sans-serif;
 }
 .mono{
@@ -52,11 +77,19 @@ h1,h2,h3,.display{
 a{
   color:var(--amber);
 }
-/* ================= HEADER ================= */
+/* =========================================================
+   HEADER
+   ========================================================= */
 header.top{
   padding:22px 18px 16px;
   border-bottom:1px solid var(--brass-line-soft);
-  background:linear-gradient(180deg,#1a140f 0%,transparent 100%);
+  background:
+    linear-gradient(
+      180deg,
+      #1b1108ee,
+      #150d07f2
+    );
+  backdrop-filter:blur(8px);
 }
 .brand-row{
   display:flex;
@@ -75,7 +108,7 @@ header.top{
   letter-spacing:.14em;
   text-transform:uppercase;
   color:var(--amber);
-  opacity:.85;
+  opacity:.9;
 }
 .brand h1{
   font-size:20px;
@@ -109,22 +142,28 @@ header.top{
 }
 .role-toggle button.active{
   background:var(--amber);
-  color:#14100D;
+  color:#1A1006;
   font-weight:700;
 }
+/* =========================================================
+   MAIN
+   ========================================================= */
 main{
   max-width:640px;
   margin:0 auto;
   padding:0 14px;
 }
-/* ================= CONSOLE ================= */
+/* =========================================================
+   CONSOLE
+   ========================================================= */
 .console{
   margin-top:16px;
-  background:linear-gradient(
-    180deg,
-    var(--panel-raised),
-    var(--panel)
-  );
+  background:
+    linear-gradient(
+      180deg,
+      var(--panel-raised),
+      var(--panel)
+    );
   border:1px solid var(--brass-line);
   border-radius:14px;
   padding:16px 16px 18px;
@@ -132,6 +171,7 @@ main{
     0 8px 24px rgba(0,0,0,.35),
     inset 0 1px 0 rgba(255,255,255,.03);
   position:relative;
+  overflow:hidden;
 }
 .console::before{
   content:'';
@@ -163,9 +203,13 @@ main{
   width:6px;
   height:6px;
   border-radius:50%;
-  background:var(--bright-green);
-  box-shadow:0 0 6px var(--bright-green);
+  background:var(--green);
+  box-shadow:
+    0 0 6px var(--green);
 }
+/* =========================================================
+   COUNTER
+   ========================================================= */
 .counter-display{
   display:flex;
   align-items:baseline;
@@ -186,9 +230,10 @@ main{
   font-family:'IBM Plex Mono',monospace;
   font-weight:700;
   font-size:26px;
-  color:var(--amber);
+  color:var(--amber-bright);
   box-shadow:var(--shadow-deep);
-  text-shadow:0 0 8px rgba(232,163,61,.4);
+  text-shadow:
+    0 0 8px rgba(242,194,94,.4);
 }
 .counter-of{
   font-family:'IBM Plex Mono',monospace;
@@ -201,6 +246,9 @@ main{
   margin-top:-8px;
   margin-bottom:14px;
 }
+/* =========================================================
+   VU METER
+   ========================================================= */
 .vu-meter{
   display:flex;
   gap:2px;
@@ -215,12 +263,17 @@ main{
 }
 .vu-seg.on{
   background:var(--amber);
-  box-shadow:0 0 4px rgba(232,163,61,.5);
+  box-shadow:
+    0 0 4px rgba(217,164,65,.5);
 }
 .vu-seg.on.hot{
-  background:var(--bright-green);
-  box-shadow:0 0 4px rgba(79,211,135,.6);
+  background:var(--green);
+  box-shadow:
+    0 0 4px rgba(85,193,126,.6);
 }
+/* =========================================================
+   STAT GRID
+   ========================================================= */
 .stat-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -245,12 +298,14 @@ main{
   margin-top:2px;
 }
 .stat-cell.warn .stat-num{
-  color:var(--amber);
+  color:var(--amber-bright);
 }
 .stat-cell.reg .stat-num{
-  color:var(--bright-green);
+  color:var(--green);
 }
-/* ================= TOOLBAR ================= */
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
 .toolbar{
   display:flex;
   gap:8px;
@@ -269,6 +324,9 @@ main{
   color:var(--paper);
   font-size:14px;
 }
+.search-wrap input::placeholder{
+  color:#7D6C4F;
+}
 .search-wrap input:focus{
   outline:none;
   border-color:var(--amber);
@@ -281,9 +339,14 @@ main{
   opacity:.5;
 }
 .btn-add{
-  background:var(--amber);
-  color:#14100D;
-  border:none;
+  background:
+    linear-gradient(
+      180deg,
+      var(--amber-bright),
+      var(--amber)
+    );
+  color:#1A1006;
+  border:1px solid var(--amber);
   border-radius:9px;
   padding:0 16px;
   font-weight:700;
@@ -292,6 +355,12 @@ main{
   cursor:pointer;
   white-space:nowrap;
 }
+.btn-add:active{
+  transform:scale(.97);
+}
+/* =========================================================
+   FILTERS
+   ========================================================= */
 .filter-row{
   display:flex;
   gap:6px;
@@ -317,11 +386,13 @@ main{
 }
 .chip.active{
   background:var(--amber);
-  color:#14100D;
+  color:#1A1006;
   border-color:var(--amber);
   font-weight:700;
 }
-/* ================= SONG CARDS ================= */
+/* =========================================================
+   SONG CARDS
+   ========================================================= */
 .song-list{
   margin-top:14px;
   display:flex;
@@ -337,10 +408,16 @@ main{
   align-items:flex-start;
   gap:11px;
   cursor:pointer;
-  transition:border-color .15s;
+  transition:
+    border-color .15s ease,
+    transform .08s ease;
 }
 .song-card:hover{
   border-color:var(--brass-line);
+}
+.song-card:active{
+  transform:scale(.995);
+  border-color:var(--amber-dim);
 }
 .status-led{
   width:10px;
@@ -396,26 +473,28 @@ main{
   flex-shrink:0;
 }
 .pill-draft{
-  background:rgba(232,163,61,.13);
-  color:var(--amber);
+  background:rgba(217,164,65,.13);
+  color:var(--amber-bright);
 }
 .pill-lyrics{
-  background:rgba(91,155,199,.15);
+  background:rgba(92,149,217,.15);
   color:var(--blue);
 }
 .pill-audio{
-  background:rgba(159,114,190,.15);
+  background:rgba(171,132,224,.15);
   color:var(--violet);
 }
 .pill-ready{
-  background:rgba(79,168,117,.18);
+  background:rgba(85,193,126,.18);
   color:var(--green);
 }
 .pill-registered{
-  background:rgba(79,211,135,.16);
+  background:rgba(85,193,126,.16);
   color:var(--bright-green);
 }
-/* ================= AUDIO MINI PLAYER ================= */
+/* =========================================================
+   AUDIO MINI PLAYER
+   ========================================================= */
 .audio-mini{
   margin-top:9px;
   display:flex;
@@ -424,7 +503,7 @@ main{
 }
 .play-song-btn{
   background:#0B0805;
-  color:var(--amber);
+  color:var(--amber-bright);
   border:1px solid var(--brass-line);
   border-radius:7px;
   padding:6px 10px;
@@ -436,7 +515,8 @@ main{
 }
 .play-song-btn.playing{
   background:var(--amber);
-  color:#14100D;
+  color:#1A1006;
+  border-color:var(--amber);
 }
 .audio-label{
   font-family:'IBM Plex Mono',monospace;
@@ -446,7 +526,9 @@ main{
   text-overflow:ellipsis;
   white-space:nowrap;
 }
-/* ================= OVERLAY ================= */
+/* =========================================================
+   OVERLAY
+   ========================================================= */
 .overlay{
   position:fixed;
   inset:0;
@@ -462,7 +544,12 @@ main{
 .overlay-header{
   position:sticky;
   top:0;
-  background:var(--deck);
+  background:
+    linear-gradient(
+      180deg,
+      #1b1108,
+      #150d07
+    );
   z-index:5;
   border-bottom:1px solid var(--brass-line-soft);
   padding:16px;
@@ -482,6 +569,9 @@ main{
   justify-content:center;
   cursor:pointer;
 }
+.back-btn:hover{
+  border-color:var(--amber-dim);
+}
 .overlay-header h2{
   font-size:16px;
   margin:0;
@@ -493,7 +583,9 @@ main{
   margin:0 auto;
   width:100%;
 }
-/* ================= FORM ================= */
+/* =========================================================
+   FORM
+   ========================================================= */
 .field{
   margin-bottom:14px;
 }
@@ -517,10 +609,16 @@ main{
   font-size:14px;
   font-family:'Inter',sans-serif;
 }
+.field input::placeholder,
+.field textarea::placeholder{
+  color:#7D6C4F;
+}
 .field input:focus,
 .field textarea:focus{
   outline:none;
   border-color:var(--amber);
+  box-shadow:
+    0 0 0 2px rgba(217,164,65,.08);
 }
 .field textarea{
   min-height:100px;
@@ -536,7 +634,9 @@ main{
   color:var(--paper-dim);
   margin-top:5px;
 }
-/* ================= AUDIO UPLOAD ================= */
+/* =========================================================
+   AUDIO UPLOAD
+   ========================================================= */
 .audio-box{
   background:#0B0805;
   border:1px dashed var(--brass-line);
@@ -571,7 +671,9 @@ main{
   color:var(--paper-dim);
   margin-top:7px;
 }
-/* ================= TOGGLES ================= */
+/* =========================================================
+   TOGGLES
+   ========================================================= */
 .toggle-row{
   display:flex;
   align-items:center;
@@ -621,19 +723,21 @@ main{
   transition:.15s;
 }
 .switch input:checked + .track{
-  background:rgba(79,168,117,.35);
+  background:rgba(85,193,126,.35);
   border-color:var(--green);
 }
 .switch input:checked + .track::before{
   transform:translateX(18px);
   background:var(--bright-green);
 }
-/* ================= SECTIONS ================= */
+/* =========================================================
+   SECTIONS
+   ========================================================= */
 .section-title{
   font-family:'Space Grotesk',sans-serif;
   font-weight:700;
   font-size:13.5px;
-  color:var(--amber);
+  color:var(--amber-bright);
   margin:22px 0 12px;
   display:flex;
   align-items:center;
@@ -674,8 +778,10 @@ main{
   flex-shrink:0;
 }
 .check-box.done{
-  background:var(--bright-green);
-  border-color:var(--bright-green);
+  background:var(--green);
+  border-color:var(--green);
+  box-shadow:
+    0 0 6px rgba(85,193,126,.25);
 }
 .check-box.done svg{
   stroke:#0B0805;
@@ -683,7 +789,9 @@ main{
 .check-item.done-txt{
   color:var(--paper);
 }
-/* ================= BUTTONS ================= */
+/* =========================================================
+   BUTTONS
+   ========================================================= */
 .btn-row{
   display:flex;
   gap:10px;
@@ -692,15 +800,23 @@ main{
 }
 .btn-primary{
   flex:1;
-  background:var(--amber);
-  color:#14100D;
-  border:none;
+  background:
+    linear-gradient(
+      180deg,
+      var(--amber-bright),
+      var(--amber)
+    );
+  color:#1A1006;
+  border:1px solid var(--amber);
   border-radius:9px;
   padding:13px;
   font-weight:700;
   font-size:14px;
   font-family:'Space Grotesk',sans-serif;
   cursor:pointer;
+}
+.btn-primary:active{
+  transform:scale(.98);
 }
 .btn-danger{
   background:transparent;
@@ -715,12 +831,15 @@ main{
 .role-note{
   font-size:11.5px;
   color:var(--paper-dim);
-  background:rgba(232,163,61,.08);
-  border:1px solid rgba(232,163,61,.25);
+  background:rgba(217,164,65,.08);
+  border:1px solid rgba(217,164,65,.25);
   border-radius:8px;
   padding:9px 11px;
   margin-bottom:14px;
 }
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
 .empty-state{
   text-align:center;
   padding:50px 20px;
@@ -735,26 +854,38 @@ main{
   font-size:13px;
   margin-bottom:18px;
 }
+/* =========================================================
+   TOAST
+   ========================================================= */
 .toast{
   position:fixed;
   bottom:20px;
   left:50%;
   transform:translateX(-50%);
   background:var(--panel-raised);
-  border:1px solid var(--brass-line);
-  color:var(--paper);
+  border:1px solid var(--amber);
+  color:var(--amber-bright);
   padding:10px 18px;
   border-radius:20px;
   font-size:12.5px;
   z-index:100;
-  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.4);
   opacity:0;
-  transition:opacity .2s;
+  transition:
+    opacity .2s,
+    transform .2s;
   pointer-events:none;
 }
 .toast.show{
   opacity:1;
+  transform:
+    translateX(-50%)
+    translateY(-5px);
 }
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 @media(max-width:560px){
   .row2{
     grid-template-columns:1fr;
@@ -770,30 +901,109 @@ main{
     font-size:8.5px;
   }
 }
+  /* ================= PAGE NAVIGATION ================= */
+
+.page-nav{
+  display:flex;
+  gap:7px;
+  margin-top:14px;
+  overflow-x:auto;
+  padding-bottom:2px;
+  scrollbar-width:none;
+}
+
+.page-nav::-webkit-scrollbar{
+  display:none;
+}
+
+.page-btn{
+  flex:1;
+  min-width:max-content;
+  text-align:center;
+  text-decoration:none;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+
+  color:var(--paper-dim);
+  background:var(--panel);
+
+  border:1px solid var(--brass-line-soft);
+  border-radius:8px;
+
+  padding:9px 12px;
+
+  transition:
+    background .15s ease,
+    color .15s ease,
+    border-color .15s ease,
+    transform .08s ease;
+}
+
+.page-btn:hover{
+  color:var(--amber);
+  border-color:var(--brass-line);
+  background:var(--panel-raised);
+}
+
+.page-btn:active{
+  transform:scale(.97);
+}
+
+/* Current page */
+.page-btn:first-child{
+  color:var(--amber);
+  border-color:rgba(232,163,61,.45);
+}
 </style>
 </head>
 <body>
 <header class="top">
   <div class="brand-row">
-<div class="brand">
-  <span class="eyebrow">
-    Registration Command Center
-  </span>
-  <h1>
-    Reel Ledger
-  </h1>
-  <span class="sub" id="roleSubtitle">
-    Master view — full control
-  </span>
-</div>
-<div class="role-toggle">
-  <button id="btnMaster" class="active">
-    Master
-  </button>
-  <button id="btnSon">
-    Son
-  </button>
-</div>
+
+    <div class="brand">
+      <span class="eyebrow">
+        Registration Command Center
+      </span>
+
+      <h1>
+        Reel Ledger
+      </h1>
+
+      <span class="sub" id="roleSubtitle">
+        Master view — full control
+      </span>
+    </div>
+
+    <div class="role-toggle">
+      <button id="btnMaster" class="active">
+        Master
+      </button>
+
+      <button id="btnSon">
+        Son
+      </button>
+    </div>
+
+  </div>
+
+  <!-- PAGE NAVIGATION -->
+  <div class="page-nav">
+
+    <a href="../" class="page-btn">
+      MAIN
+    </a>
+
+    <a href="../Press%20Desk%20AI/" class="page-btn">
+      PRESS DESK AI
+    </a>
+
+    <a href="../Command-Center/" class="page-btn">
+      COMMAND CENTER
+    </a>
+
   </div>
 </header>
 <main>
