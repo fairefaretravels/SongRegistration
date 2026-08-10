@@ -1,1 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+<title>Radio Programming Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS ============================= */
+:root{
+  --bg:            #150d07;
+  --bg-panel:      #201408;
+  --bg-panel-2:    #2a1c0e;
+  --bg-raised:     #331f0f;
+  --border:        #43301a;
+  --border-soft:   #362512;
+  --accent:        #d9a441;
+  --accent-bright: #f2c25e;
+  --accent-dim:    #8a6a2e;
+  --cream:         #f4e9d6;
+  --muted:         #b8a582;
+  --muted-dim:     #7d6c4f;
+  --green:         #55c17e;
+  --green-dim:     #2c4a34;
+  --blue:          #5c95d9;
+  --blue-dim:      #29394d;
+  --purple:        #ab84e0;
+  --purple-dim:    #3a2f4d;
+  --red:           #e2584f;
+  --red-dim:       #4a2523;
+  --radius:        10px;
+  --font-head: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(217,164,65,0.07), transparent 60%),
+    repeating-linear-gradient(180deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px),
+    var(--bg);
+  color:var(--cream);
+  font-family:var(--font-body);
+  min-height:100vh;
+  padding-bottom:86px;
+}
+h1,h2,h3,h4{font-family:var(--font-head);margin:0;letter-spacing:0.01em;}
+.mono{font-family:var(--font-mono);}
+a{color:var(--accent);}
+button{font-family:var(--font-body);cursor:pointer;}
+::selection{background:var(--accent-dim);color:var(--cream);}
+::-webkit-scrollbar{height:8px;width:8px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 
+/* ============================= LAYOUT ============================= */
+.wrap{max-width:960px;margin:0 auto;padding:0 14px;}
+
+header.top{
+  position:sticky;top:0;z-index:40;
+  background:linear-gradient(180deg, #1b1108ee, #150d07f2);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border-soft);
+  padding:14px 0 12px;
+}
+.top-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.brand-eyebrow{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:0.22em;color:var(--accent-dim);
+  display:flex;align-items:center;gap:8px;margin-bottom:4px;
+}
+.rec-dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:pulse 2.2s infinite;}
+.conn-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);}
+.conn-dot.err{background:var(--red);box-shadow:0 0 8px var(--red);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
+h1.brand{font-size:18px;font-weight:700;color:var(--cream);line-height:1.15;}
+.brand-sub{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);letter-spacing:0.14em;margin-top:3px;}
+
+.role-toggle{
+  display:flex;background:var(--bg-panel);border:1px solid var(--border);border-radius:999px;padding:3px;
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.08em;flex-shrink:0;
+}
+.role-toggle button{
+  border:none;background:transparent;color:var(--muted-dim);padding:6px 11px;border-radius:999px;font-weight:600;
+}
+.role-toggle button.active{background:var(--accent);color:#1a1006;}
+
+.conn-banner{
+  display:none;background:var(--red-dim);border:1px solid var(--red);color:#ffd9d5;
+  font-family:var(--font-mono);font-size:11.5px;letter-spacing:0.05em;padding:8px 12px;border-radius:8px;margin-top:10px;
+}
+.conn-banner.show{display:block;}
+
+main{padding-top:16px;}
+.view{display:none;}
+.view.active{display:block;animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+/* ============================= STAT GRID ============================= */
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(min-width:640px){.stat-grid{grid-template-columns:repeat(4,1fr);}}
+.stat-card{
+  background:linear-gradient(180deg,var(--bg-panel-2),var(--bg-panel));
+  border:1px solid var(--border-soft);border-radius:var(--radius);padding:13px 14px 11px;position:relative;overflow:hidden;
+}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--stat-color,var(--accent));opacity:0.85;}
+.stat-label{font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.14em;color:var(--muted);text-transform:uppercase;}
+.stat-num{font-family:var(--font-mono);font-size:30px;font-weight:600;color:var(--stat-color,var(--accent-bright));margin-top:4px;line-height:1;}
+.led-row{display:flex;gap:2px;margin-top:9px;}
+.led{flex:1;height:4px;border-radius:1px;background:var(--border);}
+.led.lit{background:var(--stat-color,var(--accent));}
+
+.stat-grid.secondary{grid-template-columns:repeat(2,1fr);margin-top:10px;}
+@media(min-width:640px){.stat-grid.secondary{grid-template-columns:repeat(4,1fr);}}
+.stat-card.small{padding:10px 12px;}
+.stat-card.small .stat-num{font-size:20px;}
+
+/* ============================= SECTION HEADERS ============================= */
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:22px 0 10px;}
+.section-title{font-size:13px;font-family:var(--font-mono);letter-spacing:0.16em;color:var(--muted);text-transform:uppercase;}
+.section-title strong{color:var(--accent-bright);}
+
+/* ============================= BUTTONS ============================= */
+.btn{
+  border-radius:8px;border:1px solid var(--border);background:var(--bg-panel-2);color:var(--cream);
+  padding:9px 14px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;
+  transition:transform .08s ease, border-color .15s ease;
+}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:linear-gradient(180deg,var(--accent-bright),var(--accent));color:#1c1306;border-color:var(--accent);}
+.btn-ghost{background:transparent;}
+.btn-block{width:100%;justify-content:center;}
+.btn-sm{padding:6px 10px;font-size:11px;}
+.btn-green{border-color:var(--green);color:var(--green);}
+.btn-blue{border-color:var(--blue);color:var(--blue);}
+.btn-purple{border-color:var(--purple);color:var(--purple);}
+.btn[disabled]{opacity:0.4;cursor:not-allowed;}
+.fab-add{position:fixed;right:16px;bottom:96px;z-index:35;border-radius:999px;padding:13px 18px;box-shadow:0 8px 22px rgba(0,0,0,0.5);font-family:var(--font-mono);letter-spacing:0.04em;}
+
+/* ============================= SEARCH / FILTERS ============================= */
+.search-bar{
+  display:flex;align-items:center;gap:8px;background:var(--bg-panel);border:1px solid var(--border);
+  border-radius:9px;padding:9px 12px;margin-bottom:12px;
+}
+.search-bar input{flex:1;background:transparent;border:none;outline:none;color:var(--cream);font-size:13.5px;font-family:var(--font-body);}
+.search-bar input::placeholder{color:var(--muted-dim);}
+.search-bar svg{flex-shrink:0;opacity:0.5;}
+
+.filter-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;scrollbar-width:none;}
+.filter-row::-webkit-scrollbar{display:none;}
+.chip{
+  flex-shrink:0;font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.05em;padding:6px 11px;
+  border-radius:999px;border:1px solid var(--border);background:var(--bg-panel);color:var(--muted);white-space:nowrap;
+}
+.chip.active{background:var(--accent);color:#1a1006;border-color:var(--accent);font-weight:600;}
+
+/* ============================= SONG CARD ============================= */
+.song-list{display:flex;flex-direction:column;gap:10px;}
+.song-card{
+  background:var(--bg-panel);border:1px solid var(--border-soft);border-radius:var(--radius);padding:13px 14px;
+  transition:border-color .15s ease;
+}
+.song-card:active{border-color:var(--accent-dim);}
+.song-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.song-title{font-family:var(--font-head);font-weight:600;font-size:15px;color:var(--cream);}
+.song-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+.status-pill{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.06em;padding:4px 8px;border-radius:5px;
+  white-space:nowrap;font-weight:600;flex-shrink:0;
+}
+.badge-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+.tag{font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.03em;padding:3px 7px;border-radius:5px;border:1px solid;}
+.tag-on{opacity:1;}
+.tag-off{opacity:0.42;}
+.tag-green{color:var(--green);border-color:var(--green-dim);background:rgba(85,193,126,0.07);}
+.tag-blue{color:var(--blue);border-color:var(--blue-dim);background:rgba(92,149,217,0.07);}
+.tag-purple{color:var(--purple);border-color:var(--purple-dim);background:rgba(171,132,224,0.07);}
+.tag-red{color:var(--red);border-color:var(--red-dim);background:rgba(226,88,79,0.07);}
+.tag-amber{color:var(--accent);border-color:var(--accent-dim);background:rgba(217,164,65,0.08);}
+.song-card audio{width:100%;height:32px;margin-top:11px;}
+.song-actions{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap;}
+.empty-state{
+  text-align:center;padding:38px 18px;color:var(--muted-dim);border:1px dashed var(--border);border-radius:var(--radius);
+  font-family:var(--font-mono);font-size:12px;letter-spacing:0.04em;
+}
+
+/* ============================= MODAL ============================= */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(10,6,2,0.72);backdrop-filter:blur(3px);z-index:80;
+  display:none;align-items:flex-end;justify-content:center;
+}
+.modal-overlay.show{display:flex;}
+@media(min-width:640px){.modal-overlay{align-items:center;}}
+.modal{
+  background:var(--bg-panel);border:1px solid var(--border);border-top:2px solid var(--accent);
+  width:100%;max-width:560px;max-height:92vh;overflow-y:auto;border-radius:16px 16px 0 0;padding:20px 18px 26px;
+  animation:slideup .22s ease;
+}
+@media(min-width:640px){.modal{border-radius:14px;}}
+@keyframes slideup{from{transform:translateY(24px);opacity:0;}to{transform:none;opacity:1;}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.modal-close{background:var(--bg-panel-2);border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:8px;font-size:16px;line-height:1;}
+.field{margin-bottom:13px;}
+.field label{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase;margin-bottom:5px;}
+.field input[type=text], .field input[type=date], .field input[type=time], .field input[type=url], .field textarea, .field select{
+  width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--cream);padding:9px 11px;
+  font-family:var(--font-body);font-size:13.5px;outline:none;
+}
+.field textarea{min-height:80px;resize:vertical;font-family:var(--font-mono);font-size:12.5px;line-height:1.5;}
+.field input:focus, .field textarea:focus, .field select:focus{border-color:var(--accent);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.toggle-field{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;}
+.toggle-field span{font-size:12.5px;font-weight:500;}
+.switch{position:relative;width:38px;height:22px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.slider-el{position:absolute;inset:0;background:var(--bg-raised);border:1px solid var(--border);border-radius:999px;transition:.15s;}
+.slider-el::before{content:'';position:absolute;width:16px;height:16px;left:2px;top:2px;background:var(--muted-dim);border-radius:50%;transition:.15s;}
+.switch input:checked + .slider-el{background:var(--accent-dim);border-color:var(--accent);}
+.switch input:checked + .slider-el::before{transform:translateX(16px);background:var(--accent-bright);}
+.switch input:disabled + .slider-el{opacity:0.4;}
+.field-hint{font-size:10.5px;color:var(--muted-dim);margin-top:4px;font-family:var(--font-mono);}
+.master-lock{font-family:var(--font-mono);font-size:9px;color:var(--red);letter-spacing:0.06em;margin-left:6px;}
+
+/* Song Detail */
+.detail-head{margin-bottom:4px;}
+.detail-artist{color:var(--muted);font-size:13px;margin-top:2px;}
+.detail-section{margin-top:16px;padding-top:14px;border-top:1px solid var(--border-soft);}
+.detail-section h4{font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.lyrics-box{white-space:pre-wrap;font-family:var(--font-mono);font-size:12.5px;line-height:1.65;color:var(--cream);background:var(--bg);border:1px solid var(--border-soft);border-radius:8px;padding:12px;max-height:220px;overflow-y:auto;}
+.no-audio{font-family:var(--font-mono);font-size:11.5px;color:var(--red);letter-spacing:0.05em;padding:10px;border:1px dashed var(--red-dim);border-radius:8px;text-align:center;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;}
+.info-item .k{font-family:var(--font-mono);font-size:9.5px;color:var(--muted-dim);letter-spacing:0.06em;}
+.info-item .v{font-size:13px;color:var(--cream);margin-top:1px;}
+.radio-status-msg{font-family:var(--font-mono);font-size:11.5px;letter-spacing:0.03em;padding:10px 12px;border-radius:8px;margin-top:10px;text-align:center;}
+.msg-notready{background:var(--red-dim);color:#ffb8b0;border:1px solid var(--red);}
+.msg-awaiting{background:var(--bg-raised);color:var(--accent-bright);border:1px solid var(--accent-dim);}
+.msg-ready{background:var(--green-dim);color:#b7f0c8;border:1px solid var(--green);}
+.msg-queued{background:var(--blue-dim);color:#c6dcf5;border:1px solid var(--blue);}
+
+/* ============================= COMMERCIALS ============================= */
+.comm-card{background:var(--bg-panel);border:1px solid var(--border-soft);border-radius:var(--radius);padding:13px 14px;}
+.comm-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+.comm-card audio{width:100%;height:32px;margin-top:10px;}
+
+/* ============================= SCHEDULE ============================= */
+.station-toggle{display:flex;gap:6px;margin-bottom:12px;}
+.station-toggle button{flex:1;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--bg-panel);color:var(--muted);font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;font-weight:600;}
+.station-toggle button.active{background:var(--accent);color:#1a1006;border-color:var(--accent);}
+.day-tabs{display:flex;gap:5px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none;}
+.day-tabs::-webkit-scrollbar{display:none;}
+.day-tab{flex-shrink:0;font-family:var(--font-mono);font-size:11px;letter-spacing:0.04em;padding:8px 13px;border-radius:8px;border:1px solid var(--border);background:var(--bg-panel);color:var(--muted);font-weight:600;}
+.day-tab.active{border-color:var(--accent);color:var(--accent-bright);background:var(--bg-raised);}
+.sched-item{display:flex;gap:12px;align-items:center;background:var(--bg-panel);border:1px solid var(--border-soft);border-left:3px solid var(--type-color,var(--accent));border-radius:8px;padding:10px 13px;margin-bottom:8px;}
+.sched-time{font-family:var(--font-mono);font-size:13px;color:var(--accent-bright);width:52px;flex-shrink:0;font-weight:600;}
+.sched-info{flex:1;min-width:0;}
+.sched-title{font-size:13px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sched-sub{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:0.04em;margin-top:2px;}
+.sched-type-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:0.05em;color:var(--type-color,var(--accent));flex-shrink:0;}
+
+/* ============================= RADIO FEED ============================= */
+.feed-tabs{display:flex;gap:6px;margin-bottom:14px;}
+.feed-tabs button{flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-panel);color:var(--muted);font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.05em;font-weight:600;}
+.feed-tabs button.active{background:var(--accent);color:#1a1006;border-color:var(--accent);}
+.feed-card{background:var(--bg-panel);border:1px solid var(--border-soft);border-radius:var(--radius);padding:13px 14px;margin-bottom:10px;}
+.feed-card audio{width:100%;height:32px;margin-top:10px;}
+
+/* ============================= BOTTOM NAV ============================= */
+nav.tabbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:50;
+  background:linear-gradient(180deg,#20140acc,#150d07);
+  border-top:1px solid var(--border-soft);backdrop-filter:blur(10px);
+  display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+}
+nav.tabbar button{
+  flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;
+  color:var(--muted-dim);padding:6px 2px;border-radius:8px;position:relative;
+}
+nav.tabbar button.active{color:var(--accent-bright);}
+nav.tabbar button.active::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:18px;height:2px;background:var(--accent);border-radius:2px;box-shadow:0 0 6px var(--accent);}
+nav.tabbar button span{font-family:var(--font-mono);font-size:8.8px;letter-spacing:0.04em;}
+nav.tabbar svg{width:19px;height:19px;}
+
+/* misc */
+.hidden{display:none !important;}
+.toast{
+  position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--bg-raised);
+  border:1px solid var(--accent);color:var(--accent-bright);font-family:var(--font-mono);font-size:11.5px;
+  letter-spacing:0.05em;padding:10px 16px;border-radius:999px;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;box-shadow:0 6px 20px rgba(0,0,0,0.5);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="top-row">
+      <div>
+        <div class="brand-eyebrow"><span class="rec-dot"></span> ON AIR CONTROL</div>
+        <h1 class="brand">RADIO PROGRAMMING<br>COMMAND CENTER</h1>
+        <div class="brand-sub">STV&#8209;ONAIR + ISLAND SPICE RADIO</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+        <div style="display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:9.5px;color:var(--muted);letter-spacing:0.08em;">
+          <span id="connDot" class="conn-dot"></span> <span id="connLabel">LIVE</span>
+        </div>
+        <div class="role-toggle">
+          <button id="roleMasterBtn" data-action="set-role" data-role="master">MASTER</button>
+          <button id="roleSonBtn" data-action="set-role" data-role="son">SON</button>
+        </div>
+      </div>
+    </div>
+    <div id="connBanner" class="conn-banner">FIREBASE CONNECTION ERROR — check your network and Firestore rules.</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <section class="view active" id="view-dashboard">
+    <div class="stat-grid">
+      <div class="stat-card" style="--stat-color:var(--accent)">
+        <div class="stat-label">Total Songs</div>
+        <div class="stat-num mono" id="statTotal">0</div>
+        <div class="led-row" id="ledTotal"></div>
+      </div>
+      <div class="stat-card" style="--stat-color:var(--green)">
+        <div class="stat-label">Ready For Radio</div>
+        <div class="stat-num mono" id="statReady">0</div>
+        <div class="led-row" id="ledReady"></div>
+      </div>
+      <div class="stat-card" style="--stat-color:var(--blue)">
+        <div class="stat-label">Sent to STV</div>
+        <div class="stat-num mono" id="statStv">0</div>
+        <div class="led-row" id="ledStv"></div>
+      </div>
+      <div class="stat-card" style="--stat-color:var(--purple)">
+        <div class="stat-label">Sent to ISR</div>
+        <div class="stat-num mono" id="statIsr">0</div>
+        <div class="led-row" id="ledIsr"></div>
+      </div>
+    </div>
+
+    <div class="stat-grid secondary">
+      <div class="stat-card small" style="--stat-color:var(--red)">
+        <div class="stat-label">Missing Lyrics</div>
+        <div class="stat-num mono" id="statMissLyrics">0</div>
+      </div>
+      <div class="stat-card small" style="--stat-color:var(--red)">
+        <div class="stat-label">Missing Audio</div>
+        <div class="stat-num mono" id="statMissAudio">0</div>
+      </div>
+      <div class="stat-card small" style="--stat-color:var(--accent)">
+        <div class="stat-label">Registered</div>
+        <div class="stat-num mono" id="statRegistered">0</div>
+      </div>
+      <div class="stat-card small" style="--stat-color:var(--accent)">
+        <div class="stat-label">Ready for Reg.</div>
+        <div class="stat-num mono" id="statReadyReg">0</div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div class="section-title">Recently Updated</div>
+      <div class="section-title"><a href="#" data-action="set-tab" data-tab="songs" style="text-decoration:none;">VIEW ALL &rarr;</a></div>
+    </div>
+    <div class="song-list" id="dashRecent"></div>
+  </section>
+
+  <!-- ===================== SONG LIBRARY ===================== -->
+  <section class="view" id="view-songs">
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="searchInput" type="text" placeholder="Search title, artist, or project...">
+    </div>
+    <div class="filter-row" id="filterRow"></div>
+    <div class="song-list" id="songList"></div>
+  </section>
+
+  <!-- ===================== RADIO FEED ===================== -->
+  <section class="view" id="view-feed">
+    <div class="section-head" style="margin-top:0;">
+      <div class="section-title">Radio Feed</div>
+    </div>
+    <div class="feed-tabs">
+      <button data-action="set-feed-filter" data-filter="all" class="active">ALL READY</button>
+      <button data-action="set-feed-filter" data-filter="stv">STV&#8209;ONAIR</button>
+      <button data-action="set-feed-filter" data-filter="isr">ISLAND SPICE</button>
+    </div>
+    <div id="feedList"></div>
+  </section>
+
+  <!-- ===================== COMMERCIALS ===================== -->
+  <section class="view" id="view-commercials">
+    <div class="section-head" style="margin-top:0;">
+      <div class="section-title">Commercial Library</div>
+      <button class="btn btn-sm btn-primary" data-action="add-commercial">+ ADD COMMERCIAL</button>
+    </div>
+    <div id="commList" class="song-list"></div>
+  </section>
+
+  <!-- ===================== SCHEDULE ===================== -->
+  <section class="view" id="view-schedule">
+    <div class="section-head" style="margin-top:0;">
+      <div class="section-title">7&#8209;Day Programming</div>
+      <button class="btn btn-sm btn-primary" data-action="add-schedule">+ ADD ITEM</button>
+    </div>
+    <div class="station-toggle">
+      <button data-action="set-sched-station" data-station="stv" class="active">STV&#8209;ONAIR</button>
+      <button data-action="set-sched-station" data-station="isr">ISLAND SPICE</button>
+    </div>
+    <div class="day-tabs" id="dayTabs"></div>
+    <div id="schedList"></div>
+  </section>
+
+</main>
+
+<button class="btn btn-primary fab-add" id="fabAdd" data-action="add-song">+ ADD SONG</button>
+
+<nav class="tabbar">
+  <button data-action="set-tab" data-tab="dashboard" class="active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+    <span>DASH</span>
+  </button>
+  <button data-action="set-tab" data-tab="songs">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h2l2-7 3 14 3-11 2 4h5"/></svg>
+    <span>SONGS</span>
+  </button>
+  <button data-action="set-tab" data-tab="feed">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M8.5 8.5a6 6 0 000 8.5M15.5 8.5a6 6 0 010 8.5M5.5 5.5a10 10 0 000 14M18.5 5.5a10 10 0 010 14"/></svg>
+    <span>FEED</span>
+  </button>
+  <button data-action="set-tab" data-tab="commercials">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10v4h4l5 4V6l-5 4H3z"/><path d="M17 9a4 4 0 010 6"/></svg>
+    <span>ADS</span>
+  </button>
+  <button data-action="set-tab" data-tab="schedule">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+    <span>SCHED</span>
+  </button>
+</nav>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+import {
+  getFirestore, collection, doc, addDoc, updateDoc, onSnapshot,
+  serverTimestamp, query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+/* ============================= FIREBASE ============================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyDm0UOhhugquxipVs-WUv8uLvK-eclJbSI",
+  authDomain: "recordlabel-48b81.firebaseapp.com",
+  projectId: "recordlabel-48b81",
+  storageBucket: "recordlabel-48b81.firebasestorage.app",
+  messagingSenderId: "338109981947",
+  appId: "1:338109981947:web:e4db502810e7096cb33c5e",
+  measurementId: "G-G2E9RT4REM"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const songsCol = collection(db, "songs");
+const commercialsCol = collection(db, "commercials");
+const scheduleCol = collection(db, "schedule");
+
+/* ============================= STATE ============================= */
+const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const TYPE_COLORS = {
+  "Music":"var(--green)","Commercial":"var(--purple)","Station ID":"var(--blue)",
+  "Show":"var(--accent)","Promo":"var(--accent-bright)","News":"var(--red)"
+};
+
+const state = {
+  songs: [],
+  commercials: [],
+  schedule: [],
+  role: localStorage.getItem("rpcc_role") || "master",
+  tab: "dashboard",
+  search: "",
+  filter: "all",
+  feedFilter: "all",
+  schedStation: "stv",
+  schedDay: "Monday",
+  connError: false,
+};
+
+/* ============================= HELPERS ============================= */
+function esc(str){
+  if(str===undefined||str===null) return "";
+  return String(str).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>t.classList.remove("show"), 2600);
+}
+function isReady(s){ return !!(s.lyricsComplete && s.audioComplete); }
+function computeStatus(s){
+  if(s.stvDistributed && s.isrDistributed) return {label:"DISTRIBUTED · BOTH", cls:"tag-blue"};
+  if(s.stvDistributed) return {label:"DISTRIBUTED · STV", cls:"tag-blue"};
+  if(s.isrDistributed) return {label:"DISTRIBUTED · ISR", cls:"tag-purple"};
+  if(isReady(s) && s.radioApproved) return {label:"READY FOR RADIO", cls:"tag-green"};
+  if(s.registrationSubmitted) return {label:"REGISTERED", cls:"tag-amber"};
+  if(isReady(s)) return {label:"READY", cls:"tag-green"};
+  if(s.audioComplete) return {label:"AUDIO COMPLETE", cls:"tag-purple"};
+  if(s.lyricsComplete) return {label:"LYRICS COMPLETE", cls:"tag-blue"};
+  return {label:"DRAFT", cls:"tag-red"};
+}
+function fmtDate(v){
+  if(!v) return "—";
+  if(typeof v === "string") return v;
+  if(v.toDate) return v.toDate().toLocaleDateString();
+  return "—";
+}
+
+/* ============================= FIRESTORE LISTENERS ============================= */
+function setConnError(err){
+  state.connError = !!err;
+  const banner = document.getElementById("connBanner");
+  const dot = document.getElementById("connDot");
+  const label = document.getElementById("connLabel");
+  banner.classList.toggle("show", state.connError);
+  dot.classList.toggle("err", state.connError);
+  label.textContent = state.connError ? "OFFLINE" : "LIVE";
+}
+
+onSnapshot(query(songsCol, orderBy("updatedAt","desc")),
+  snap => {
+    state.songs = snap.docs.map(d => ({id:d.id, ...d.data()}));
+    setConnError(false);
+    render();
+  },
+  err => { console.error(err); setConnError(true); render(); }
+);
+onSnapshot(commercialsCol,
+  snap => { state.commercials = snap.docs.map(d => ({id:d.id, ...d.data()})); render(); },
+  err => { console.error(err); setConnError(true); }
+);
+onSnapshot(scheduleCol,
+  snap => { state.schedule = snap.docs.map(d => ({id:d.id, ...d.data()})); render(); },
+  err => { console.error(err); setConnError(true); }
+);
+
+/* ============================= STATION SYNC (future GitHub hook) ============================= */
+async function syncSongToStation(song, station){
+  // station: 'stv' | 'isr' | 'both'
+  // For now this only updates Firestore distribution state. A real GitHub API
+  // sync would happen server-side later via a function/API route — never here.
+  const updates = { updatedAt: serverTimestamp() };
+  if(station === "stv" || station === "both"){
+    updates.stvDistributed = true;
+    updates.stvDistributedAt = serverTimestamp();
+  }
+  if(station === "isr" || station === "both"){
+    updates.isrDistributed = true;
+    updates.isrDistributedAt = serverTimestamp();
+  }
+  await updateDoc(doc(db, "songs", song.id), updates);
+  if(station === "both") toast("QUEUED FOR STV-ONAIR + ISLAND SPICE");
+  else if(station === "stv") toast("QUEUED FOR STV-ONAIR");
+  else toast("QUEUED FOR ISLAND SPICE");
+}
+
+/* ============================= FILTERING ============================= */
+function filterSongs(list){
+  let out = list;
+  const q = state.search.trim().toLowerCase();
+  if(q){
+    out = out.filter(s =>
+      (s.title||"").toLowerCase().includes(q) ||
+      (s.artist||"").toLowerCase().includes(q) ||
+      (s.project||"").toLowerCase().includes(q)
+    );
+  }
+  switch(state.filter){
+    case "draft": out = out.filter(s => !s.lyricsComplete && !s.audioComplete); break;
+    case "lyrics": out = out.filter(s => s.lyricsComplete); break;
+    case "audio": out = out.filter(s => s.audioComplete); break;
+    case "ready": out = out.filter(isReady); break;
+    case "registered": out = out.filter(s => s.registrationSubmitted); break;
+    case "readyRadio": out = out.filter(s => isReady(s) && s.radioApproved); break;
+    case "sentStv": out = out.filter(s => s.stvDistributed); break;
+    case "sentIsr": out = out.filter(s => s.isrDistributed); break;
+    case "sentBoth": out = out.filter(s => s.stvDistributed && s.isrDistributed); break;
+    case "missingLyrics": out = out.filter(s => !s.lyricsComplete); break;
+    case "missingAudio": out = out.filter(s => !s.audioComplete); break;
+    default: break;
+  }
+  return out;
+}
+
+const FILTERS = [
+  ["all","All"],["draft","Draft"],["lyrics","Lyrics Complete"],["audio","Audio Complete"],
+  ["ready","Ready"],["registered","Registered"],["readyRadio","Ready for Radio"],
+  ["sentStv","Sent to STV"],["sentIsr","Sent to Island Spice"],["sentBoth","Sent to Both"],
+  ["missingLyrics","Missing Lyrics"],["missingAudio","Missing Audio"]
+];
+
+/* ============================= RENDER: DASHBOARD ============================= */
+function ledRow(n, total){
+  const total10 = 10;
+  const lit = total>0 ? Math.round((n/total)*total10) : 0;
+  let out = "";
+  for(let i=0;i<total10;i++) out += `<div class="led ${i<lit?'lit':''}"></div>`;
+  return out;
+}
+function renderDashboard(){
+  const s = state.songs;
+  const total = s.length;
+  const ready = s.filter(x => x.lyricsComplete && x.audioComplete).length;
+  const stv = s.filter(x => x.stvDistributed).length;
+  const isr = s.filter(x => x.isrDistributed).length;
+  const missLyr = s.filter(x => !x.lyricsComplete).length;
+  const missAud = s.filter(x => !x.audioComplete).length;
+  const registered = s.filter(x => x.registrationSubmitted).length;
+  const readyReg = s.filter(x => x.lyricsComplete && x.audioComplete && !x.registrationSubmitted).length;
+
+  document.getElementById("statTotal").textContent = total;
+  document.getElementById("statReady").textContent = ready;
+  document.getElementById("statStv").textContent = stv;
+  document.getElementById("statIsr").textContent = isr;
+  document.getElementById("statMissLyrics").textContent = missLyr;
+  document.getElementById("statMissAudio").textContent = missAud;
+  document.getElementById("statRegistered").textContent = registered;
+  document.getElementById("statReadyReg").textContent = readyReg;
+
+  document.getElementById("ledTotal").innerHTML = ledRow(total, Math.max(total,1));
+  document.getElementById("ledReady").innerHTML = ledRow(ready, total);
+  document.getElementById("ledStv").innerHTML = ledRow(stv, total);
+  document.getElementById("ledIsr").innerHTML = ledRow(isr, total);
+
+  const recent = [...s].slice(0,5);
+  const list = document.getElementById("dashRecent");
+  list.innerHTML = recent.length ? recent.map(songCardHTML).join("") :
+    `<div class="empty-state">NO SONGS YET — TAP "+ ADD SONG" TO REGISTER YOUR FIRST TRACK</div>`;
+}
+
+/* ============================= RENDER: SONG CARD ============================= */
+function songCardHTML(s){
+  const st = computeStatus(s);
+  const audio = s.audioUrl ? `<audio controls preload="none" src="${esc(s.audioUrl)}"></audio>` : "";
+  return `
+  <div class="song-card" data-id="${s.id}">
+    <div class="song-top" data-action="open-song" data-id="${s.id}">
+      <div>
+        <div class="song-title">${esc(s.title || "Untitled")}</div>
+        <div class="song-meta">${esc(s.artist || "Unknown Artist")}${s.project ? " · "+esc(s.project) : ""}</div>
+      </div>
+      <div class="status-pill ${st.cls}" style="background:transparent;border:1px solid currentColor;">${st.label}</div>
+    </div>
+    <div class="badge-row">
+      <span class="tag tag-blue ${s.lyricsComplete?'tag-on':'tag-off'}">LYRICS</span>
+      <span class="tag tag-purple ${s.audioComplete?'tag-on':'tag-off'}">AUDIO</span>
+      <span class="tag tag-amber ${s.registrationSubmitted?'tag-on':'tag-off'}">REGISTERED</span>
+      <span class="tag tag-green ${s.radioApproved?'tag-on':'tag-off'}">RADIO APPROVED</span>
+      <span class="tag tag-blue ${s.stvDistributed?'tag-on':'tag-off'}">STV</span>
+      <span class="tag tag-purple ${s.isrDistributed?'tag-on':'tag-off'}">ISR</span>
+    </div>
+    ${audio}
+    <div class="song-actions">
+      <button class="btn btn-sm" data-action="open-song" data-id="${s.id}">DETAILS</button>
+      <button class="btn btn-sm" data-action="edit-song" data-id="${s.id}">EDIT</button>
+    </div>
+  </div>`;
+}
+
+/* ============================= RENDER: SONGS TAB ============================= */
+function renderFilterRow(){
+  document.getElementById("filterRow").innerHTML = FILTERS.map(([key,label]) =>
+    `<button class="chip ${state.filter===key?'active':''}" data-action="set-filter" data-filter="${key}">${label.toUpperCase()}</button>`
+  ).join("");
+}
+function renderSongs(){
+  renderFilterRow();
+  const filtered = filterSongs(state.songs);
+  document.getElementById("songList").innerHTML = filtered.length ?
+    filtered.map(songCardHTML).join("") :
+    `<div class="empty-state">NO SONGS MATCH THIS VIEW</div>`;
+}
+
+/* ============================= RENDER: RADIO FEED ============================= */
+function renderFeed(){
+  document.querySelectorAll(".feed-tabs button").forEach(b =>
+    b.classList.toggle("active", b.dataset.filter === state.feedFilter));
+
+  let list = state.songs.filter(s => s.radioApproved === true && s.audioComplete === true);
+  if(state.feedFilter === "stv") list = list.filter(s => s.stvDistributed);
+  if(state.feedFilter === "isr") list = list.filter(s => s.isrDistributed);
+
+  const el = document.getElementById("feedList");
+  if(!list.length){
+    el.innerHTML = `<div class="empty-state">NO SONGS IN THIS FEED YET — APPROVE + DISTRIBUTE SONGS TO SEE THEM HERE</div>`;
+    return;
+  }
+  el.innerHTML = list.map(s => `
+    <div class="feed-card">
+      <div class="song-top">
+        <div>
+          <div class="song-title">${esc(s.title||"Untitled")}</div>
+          <div class="song-meta">${esc(s.artist||"Unknown Artist")}</div>
+        </div>
+        <div class="status-pill" style="border:1px solid var(--accent);color:var(--accent-bright);">
+          ${s.stvDistributed && s.isrDistributed ? "BOTH STATIONS" : s.stvDistributed ? "STV-ONAIR" : s.isrDistributed ? "ISLAND SPICE" : "APPROVED · QUEUED"}
+        </div>
+      </div>
+      ${s.audioUrl ? `<audio controls preload="none" src="${esc(s.audioUrl)}"></audio>` : `<div class="no-audio" style="margin-top:10px;">NO AUDIO ATTACHED</div>`}
+    </div>
+  `).join("");
+}
+
+/* ============================= RENDER: COMMERCIALS ============================= */
+function renderCommercials(){
+  const list = state.commercials;
+  const el = document.getElementById("commList");
+  if(!list.length){
+    el.innerHTML = `<div class="empty-state">NO COMMERCIALS YET — TAP "+ ADD COMMERCIAL"</div>`;
+    return;
+  }
+  el.innerHTML = list.map(c => `
+    <div class="comm-card">
+      <div class="comm-top">
+        <div>
+          <div class="song-title">${esc(c.title||"Untitled Spot")}</div>
+          <div class="song-meta">${esc(c.advertiser||"Unknown Advertiser")}${c.duration?" · "+esc(c.duration):""}</div>
+        </div>
+        <div class="status-pill" style="border:1px solid ${c.active?'var(--green)':'var(--red)'};color:${c.active?'var(--green)':'var(--red)'};">
+          ${c.active?"ACTIVE":"INACTIVE"}
+        </div>
+      </div>
+      ${c.description ? `<div class="song-meta" style="margin-top:6px;">${esc(c.description)}</div>` : ""}
+      ${c.audioUrl ? `<audio controls preload="none" src="${esc(c.audioUrl)}"></audio>` : `<div class="no-audio" style="margin-top:10px;">NO AUDIO ATTACHED</div>`}
+    </div>
+  `).join("");
+}
+
+/* ============================= RENDER: SCHEDULE ============================= */
+function renderSchedule(){
+  document.querySelectorAll(".station-toggle button").forEach(b =>
+    b.classList.toggle("active", b.dataset.station === state.schedStation));
+
+  document.getElementById("dayTabs").innerHTML = DAYS.map(d =>
+    `<button class="day-tab ${state.schedDay===d?'active':''}" data-action="set-sched-day" data-day="${d}">${d.slice(0,3).toUpperCase()}</button>`
+  ).join("");
+
+  const items = state.schedule
+    .filter(i => i.station === state.schedStation && i.day === state.schedDay)
+    .sort((a,b) => (a.time||"").localeCompare(b.time||""));
+
+  const el = document.getElementById("schedList");
+  if(!items.length){
+    el.innerHTML = `<div class="empty-state">NOTHING SCHEDULED FOR ${state.schedDay.toUpperCase()} ON ${state.schedStation.toUpperCase()} — TAP "+ ADD ITEM"</div>`;
+    return;
+  }
+  el.innerHTML = items.map(i => `
+    <div class="sched-item" style="--type-color:${TYPE_COLORS[i.type]||'var(--accent)'}">
+      <div class="sched-time mono">${esc(i.time||"--:--")}</div>
+      <div class="sched-info">
+        <div class="sched-title">${esc(i.itemTitle||"Untitled")}${i.artist?" — "+esc(i.artist):""}</div>
+        <div class="sched-sub">${esc(i.station.toUpperCase())}</div>
+      </div>
+      <div class="sched-type-badge">${esc((i.type||"").toUpperCase())}</div>
+    </div>
+  `).join("");
+}
+
+/* ============================= TAB SWITCHING ============================= */
+function renderTabs(){
+  document.querySelectorAll("nav.tabbar button").forEach(b =>
+    b.classList.toggle("active", b.dataset.tab === state.tab));
+  document.querySelectorAll(".view").forEach(v =>
+    v.classList.toggle("active", v.id === "view-"+state.tab));
+  document.getElementById("fabAdd").style.display = state.tab === "songs" || state.tab === "dashboard" ? "inline-flex" : "none";
+}
+
+/* ============================= MASTER RENDER ============================= */
+function render(){
+  document.getElementById("roleMasterBtn").classList.toggle("active", state.role==="master");
+  document.getElementById("roleSonBtn").classList.toggle("active", state.role==="son");
+  renderTabs();
+  renderDashboard();
+  renderSongs();
+  renderFeed();
+  renderCommercials();
+  renderSchedule();
+}
+
+/* ============================= MODALS ============================= */
+function openModal(html){
+  document.getElementById("modalBody").innerHTML = html;
+  document.getElementById("modalOverlay").classList.add("show");
+}
+function closeModal(){
+  document.getElementById("modalOverlay").classList.remove("show");
+  document.getElementById("modalBody").innerHTML = "";
+}
+
+function songFormHTML(song){
+  const s = song || {};
+  const isSon = state.role === "son";
+  const lock = isSon ? `<span class="master-lock">MASTER ONLY</span>` : "";
+  return `
+  <form id="songForm" data-id="${s.id||''}">
+    <div class="modal-head">
+      <h3>${s.id ? "Edit Song" : "Add Song"}</h3>
+      <button type="button" class="modal-close" data-action="close-modal">&times;</button>
+    </div>
+    <div class="field"><label>Song Title</label><input type="text" id="f-title" value="${esc(s.title)}" required></div>
+    <div class="field-row">
+      <div class="field"><label>Artist</label><input type="text" id="f-artist" value="${esc(s.artist)}"></div>
+      <div class="field"><label>Project / Album</label><input type="text" id="f-project" value="${esc(s.project)}"></div>
+    </div>
+    <div class="field"><label>Description</label><textarea id="f-description" style="min-height:50px;font-family:var(--font-body);">${esc(s.description)}</textarea></div>
+    <div class="field"><label>Complete Lyrics</label><textarea id="f-lyrics">${esc(s.lyrics)}</textarea></div>
+    <div class="field"><label>Audio URL</label><input type="url" id="f-audioUrl" placeholder="https://..." value="${esc(s.audioUrl)}"></div>
+    <div class="field-row">
+      <div class="field"><label>Audio Filename</label><input type="text" id="f-audioFileName" value="${esc(s.audioFileName)}"></div>
+      <div class="field"><label>Suno Link</label><input type="url" id="f-sunoLink" value="${esc(s.sunoLink)}"></div>
+    </div>
+    <div class="field"><label>Date Created</label><input type="date" id="f-dateCreated" value="${esc(s.dateCreated)}"></div>
+
+    <div class="toggle-field">
+      <span>Lyrics Complete</span>
+      <label class="switch"><input type="checkbox" id="f-lyricsComplete" ${s.lyricsComplete?'checked':''}><span class="slider-el"></span></label>
+    </div>
+    <div class="toggle-field">
+      <span>Audio Complete</span>
+      <label class="switch"><input type="checkbox" id="f-audioComplete" ${s.audioComplete?'checked':''}><span class="slider-el"></span></label>
+    </div>
+    <div class="toggle-field">
+      <span>Registration Submitted ${lock}</span>
+      <label class="switch"><input type="checkbox" id="f-registrationSubmitted" ${s.registrationSubmitted?'checked':''} ${isSon?'disabled':''}><span class="slider-el"></span></label>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Registration Number</label><input type="text" id="f-registrationNumber" value="${esc(s.registrationNumber)}" ${isSon?'disabled':''}></div>
+      <div class="field"><label>Registration Date</label><input type="date" id="f-registrationDate" value="${esc(s.registrationDate)}" ${isSon?'disabled':''}></div>
+    </div>
+    <div class="toggle-field">
+      <span>Radio Approved ${lock}</span>
+      <label class="switch"><input type="checkbox" id="f-radioApproved" ${s.radioApproved?'checked':''} ${isSon?'disabled':''}><span class="slider-el"></span></label>
+    </div>
+    <div class="field-hint" style="margin-bottom:12px;">Radio approval and registration are controlled by the Master role only.</div>
+    <div class="field"><label>Notes</label><textarea id="f-notes" style="min-height:50px;font-family:var(--font-body);">${esc(s.notes)}</textarea></div>
+
+    <button type="submit" class="btn btn-primary btn-block">SAVE SONG</button>
+  </form>`;
+}
+
+async function handleSongFormSubmit(e){
+  e.preventDefault();
+  const form = e.target;
+  const id = form.dataset.id;
+  const isSon = state.role === "son";
+
+  const payload = {
+    title: document.getElementById("f-title").value.trim(),
+    artist: document.getElementById("f-artist").value.trim(),
+    project: document.getElementById("f-project").value.trim(),
+    description: document.getElementById("f-description").value.trim(),
+    lyrics: document.getElementById("f-lyrics").value,
+    lyricsComplete: document.getElementById("f-lyricsComplete").checked,
+    audioUrl: document.getElementById("f-audioUrl").value.trim(),
+    audioFileName: document.getElementById("f-audioFileName").value.trim(),
+    audioComplete: document.getElementById("f-audioComplete").checked,
+    sunoLink: document.getElementById("f-sunoLink").value.trim(),
+    dateCreated: document.getElementById("f-dateCreated").value,
+    notes: document.getElementById("f-notes").value.trim(),
+    updatedAt: serverTimestamp(),
+  };
+  if(!isSon){
+    payload.registrationSubmitted = document.getElementById("f-registrationSubmitted").checked;
+    payload.registrationNumber = document.getElementById("f-registrationNumber").value.trim();
+    payload.registrationDate = document.getElementById("f-registrationDate").value;
+    payload.radioApproved = document.getElementById("f-radioApproved").checked;
+  }
+
+  try{
+    if(id){
+      await updateDoc(doc(db, "songs", id), payload);
+      toast("SONG UPDATED");
+    } else {
+      payload.registrationSubmitted = payload.registrationSubmitted || false;
+      payload.registrationNumber = payload.registrationNumber || "";
+      payload.registrationDate = payload.registrationDate || "";
+      payload.radioApproved = payload.radioApproved || false;
+      payload.stvDistributed = false;
+      payload.isrDistributed = false;
+      payload.stvDistributedAt = null;
+      payload.isrDistributedAt = null;
+      payload.createdAt = serverTimestamp();
+      await addDoc(songsCol, payload);
+      toast("SONG ADDED");
+    }
+    closeModal();
+  }catch(err){
+    console.error(err);
+    toast("FIREBASE CONNECTION ERROR");
+  }
+}
+
+function songDetailHTML(s){
+  const st = computeStatus(s);
+  const ready = isReady(s);
+  let radioMsg;
+  if(!ready) radioMsg = {cls:"msg-notready", text:"NOT READY FOR RADIO"};
+  else if(!s.radioApproved) radioMsg = {cls:"msg-awaiting", text:"AWAITING MASTER APPROVAL"};
+  else radioMsg = {cls:"msg-ready", text:"READY FOR RADIO"};
+
+  const canDistribute = ready && s.radioApproved && state.role === "master";
+
+  return `
+  <div class="modal-head">
+    <div class="detail-head">
+      <h3>${esc(s.title||"Untitled")}</h3>
+      <div class="detail-artist">${esc(s.artist||"Unknown Artist")}${s.project?" · "+esc(s.project):""}</div>
+    </div>
+    <button type="button" class="modal-close" data-action="close-modal">&times;</button>
+  </div>
+
+  <div class="status-pill ${st.cls}" style="border:1px solid currentColor;display:inline-block;">${st.label}</div>
+
+  ${s.description ? `<div class="detail-section"><h4>Description</h4><div class="song-meta">${esc(s.description)}</div></div>` : ""}
+
+  <div class="detail-section">
+    <h4>Audio</h4>
+    ${s.audioUrl ? `<audio controls preload="none" style="width:100%;height:36px;" src="${esc(s.audioUrl)}"></audio>` : `<div class="no-audio">NO AUDIO ATTACHED</div>`}
+    ${s.sunoLink ? `<div class="field-hint" style="margin-top:8px;">Suno: <a href="${esc(s.sunoLink)}" target="_blank" rel="noopener">${esc(s.sunoLink)}</a></div>` : ""}
+  </div>
+
+  ${s.lyrics ? `<div class="detail-section"><h4>Lyrics</h4><div class="lyrics-box">${esc(s.lyrics)}</div></div>` : ""}
+
+  <div class="detail-section">
+    <h4>Registration</h4>
+    <div class="info-grid">
+      <div class="info-item"><div class="k">SUBMITTED</div><div class="v">${s.registrationSubmitted?"Yes":"No"}</div></div>
+      <div class="info-item"><div class="k">NUMBER</div><div class="v">${esc(s.registrationNumber)||"—"}</div></div>
+      <div class="info-item"><div class="k">DATE</div><div class="v">${esc(s.registrationDate)||"—"}</div></div>
+      <div class="info-item"><div class="k">RADIO APPROVED</div><div class="v">${s.radioApproved?"Yes":"No"}</div></div>
+    </div>
+  </div>
+
+  <div class="detail-section">
+    <h4>Station Distribution</h4>
+    <div class="info-grid">
+      <div class="info-item"><div class="k">STV-ONAIR</div><div class="v">${s.stvDistributed?"Distributed":"Not sent"}</div></div>
+      <div class="info-item"><div class="k">ISLAND SPICE</div><div class="v">${s.isrDistributed?"Distributed":"Not sent"}</div></div>
+    </div>
+    <div class="radio-status-msg ${radioMsg.cls}">${radioMsg.text}</div>
+    ${canDistribute ? `
+      <div class="song-actions" style="margin-top:10px;">
+        <button class="btn btn-blue" data-action="distribute" data-id="${s.id}" data-station="stv" ${s.stvDistributed?'disabled':''}>SEND TO STV-ONAIR</button>
+        <button class="btn btn-purple" data-action="distribute" data-id="${s.id}" data-station="isr" ${s.isrDistributed?'disabled':''}>SEND TO ISLAND SPICE</button>
+        <button class="btn btn-primary" data-action="distribute" data-id="${s.id}" data-station="both" ${(s.stvDistributed&&s.isrDistributed)?'disabled':''}>SEND TO BOTH</button>
+      </div>
+    ` : (ready && s.radioApproved && state.role!=="master" ? `<div class="field-hint" style="margin-top:8px;">Only the Master role can send songs to stations.</div>` : "")}
+  </div>
+
+  <div class="song-actions" style="margin-top:16px;">
+    <button class="btn btn-block" data-action="edit-song" data-id="${s.id}">EDIT SONG</button>
+  </div>
+  `;
+}
+
+function commercialFormHTML(){
+  return `
+  <form id="commForm">
+    <div class="modal-head">
+      <h3>Add Commercial</h3>
+      <button type="button" class="modal-close" data-action="close-modal">&times;</button>
+    </div>
+    <div class="field"><label>Title</label><input type="text" id="c-title" required></div>
+    <div class="field"><label>Advertiser</label><input type="text" id="c-advertiser"></div>
+    <div class="field"><label>Description</label><textarea id="c-description" style="min-height:50px;font-family:var(--font-body);"></textarea></div>
+    <div class="field"><label>Audio URL</label><input type="url" id="c-audioUrl" placeholder="https://..."></div>
+    <div class="field-row">
+      <div class="field"><label>Audio Filename</label><input type="text" id="c-audioFileName"></div>
+      <div class="field"><label>Duration</label><input type="text" id="c-duration" placeholder="0:30"></div>
+    </div>
+    <div class="toggle-field">
+      <span>Active</span>
+      <label class="switch"><input type="checkbox" id="c-active" checked><span class="slider-el"></span></label>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">SAVE COMMERCIAL</button>
+  </form>`;
+}
+async function handleCommFormSubmit(e){
+  e.preventDefault();
+  try{
+    await addDoc(commercialsCol, {
+      title: document.getElementById("c-title").value.trim(),
+      advertiser: document.getElementById("c-advertiser").value.trim(),
+      description: document.getElementById("c-description").value.trim(),
+      audioUrl: document.getElementById("c-audioUrl").value.trim(),
+      audioFileName: document.getElementById("c-audioFileName").value.trim(),
+      duration: document.getElementById("c-duration").value.trim(),
+      active: document.getElementById("c-active").checked,
+      createdAt: serverTimestamp(),
+    });
+    toast("COMMERCIAL ADDED");
+    closeModal();
+  }catch(err){ console.error(err); toast("FIREBASE CONNECTION ERROR"); }
+}
+
+function scheduleFormHTML(){
+  const songOptions = state.songs.map(s => `<option value="${s.id}" data-title="${esc(s.title)}" data-artist="${esc(s.artist)}" data-audio="${esc(s.audioUrl)}">${esc(s.title)}</option>`).join("");
+  return `
+  <form id="schedForm">
+    <div class="modal-head">
+      <h3>Add Schedule Item</h3>
+      <button type="button" class="modal-close" data-action="close-modal">&times;</button>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Station</label>
+        <select id="s-station"><option value="stv">STV-ONAIR</option><option value="isr">Island Spice Radio</option></select>
+      </div>
+      <div class="field"><label>Day</label>
+        <select id="s-day">${DAYS.map(d=>`<option value="${d}">${d}</option>`).join("")}</select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Time</label><input type="time" id="s-time" required></div>
+      <div class="field"><label>Type</label>
+        <select id="s-type">${Object.keys(TYPE_COLORS).map(t=>`<option value="${t}">${t}</option>`).join("")}</select>
+      </div>
+    </div>
+    <div class="field"><label>Link to Existing Song (optional)</label>
+      <select id="s-songLink"><option value="">— None —</option>${songOptions}</select>
+    </div>
+    <div class="field"><label>Item Title</label><input type="text" id="s-itemTitle" required></div>
+    <div class="field"><label>Artist</label><input type="text" id="s-artist"></div>
+    <div class="field"><label>Audio URL</label><input type="url" id="s-audioUrl" placeholder="https://..."></div>
+    <button type="submit" class="btn btn-primary btn-block">SAVE TO SCHEDULE</button>
+  </form>`;
+}
+async function handleSchedFormSubmit(e){
+  e.preventDefault();
+  try{
+    await addDoc(scheduleCol, {
+      station: document.getElementById("s-station").value,
+      day: document.getElementById("s-day").value,
+      time: document.getElementById("s-time").value,
+      type: document.getElementById("s-type").value,
+      itemId: document.getElementById("s-songLink").value || "",
+      itemTitle: document.getElementById("s-itemTitle").value.trim(),
+      artist: document.getElementById("s-artist").value.trim(),
+      audioUrl: document.getElementById("s-audioUrl").value.trim(),
+      createdAt: serverTimestamp(),
+    });
+    toast("ADDED TO SCHEDULE");
+    closeModal();
+  }catch(err){ console.error(err); toast("FIREBASE CONNECTION ERROR"); }
+}
+
+/* ============================= EVENT DELEGATION ============================= */
+document.addEventListener("click", async (e) => {
+  const t = e.target.closest("[data-action]");
+  if(!t) return;
+  const action = t.dataset.action;
+
+  if(action === "set-tab"){ e.preventDefault(); state.tab = t.dataset.tab; render(); }
+  else if(action === "set-role"){
+    state.role = t.dataset.role;
+    localStorage.setItem("rpcc_role", state.role);
+    render();
+  }
+  else if(action === "set-filter"){ state.filter = t.dataset.filter; renderSongs(); }
+  else if(action === "set-feed-filter"){ state.feedFilter = t.dataset.filter; renderFeed(); }
+  else if(action === "set-sched-station"){ state.schedStation = t.dataset.station; renderSchedule(); }
+  else if(action === "set-sched-day"){ state.schedDay = t.dataset.day; renderSchedule(); }
+  else if(action === "close-modal"){ closeModal(); }
+  else if(action === "add-song"){ openModal(songFormHTML(null)); }
+  else if(action === "edit-song"){
+    const s = state.songs.find(x => x.id === t.dataset.id);
+    if(s) openModal(songFormHTML(s));
+  }
+  else if(action === "open-song"){
+    const s = state.songs.find(x => x.id === t.dataset.id);
+    if(s) openModal(songDetailHTML(s));
+  }
+  else if(action === "add-commercial"){ openModal(commercialFormHTML()); }
+  else if(action === "add-schedule"){ openModal(scheduleFormHTML()); }
+  else if(action === "distribute"){
+    const s = state.songs.find(x => x.id === t.dataset.id);
+    if(!s) return;
+    t.disabled = true;
+    try{ await syncSongToStation(s, t.dataset.station); }
+    catch(err){ console.error(err); toast("FIREBASE CONNECTION ERROR"); }
+  }
+});
+
+document.getElementById("modalOverlay").addEventListener("click", (e) => {
+  if(e.target.id === "modalOverlay") closeModal();
+});
+
+document.addEventListener("submit", (e) => {
+  if(e.target.id === "songForm") handleSongFormSubmit(e);
+  if(e.target.id === "commForm") handleCommFormSubmit(e);
+  if(e.target.id === "schedForm") handleSchedFormSubmit(e);
+});
+
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  state.search = e.target.value;
+  renderSongs();
+});
+
+/* ============================= INIT ============================= */
+render();
+</script>
+</body>
+</html>
