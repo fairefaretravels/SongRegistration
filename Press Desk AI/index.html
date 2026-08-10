@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Press Desk AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08090D;
+  --panel:#11151D;
+  --panel2:#181D27;
+  --line:rgba(255,255,255,.10);
+  --text:#F5F7FA;
+  --muted:#929AAA;
+  --gold:#F4B942;
+  --gold2:#FFD77F;
+  --cyan:#48D7E8;
+  --purple:#A879FF;
+  --green:#43E29A;
+  --red:#FF6474;
+}
+*{
+  box-sizing:border-box;
+}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 50% -10%,rgba(72,215,232,.12),transparent 35%),
+    radial-gradient(circle at 90% 40%,rgba(168,121,255,.09),transparent 30%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,sans-serif;
+}
+/* BACKGROUND */
+.grid{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  opacity:.35;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:55px 55px;
+}
+.glow{
+  position:fixed;
+  width:300px;
+  height:300px;
+  border-radius:50%;
+  filter:blur(100px);
+  opacity:.12;
+  z-index:-1;
+}
+.glow.one{
+  background:var(--cyan);
+  left:-100px;
+  top:20%;
+}
+.glow.two{
+  background:var(--purple);
+  right:-100px;
+  bottom:10%;
+}
+/* HEADER */
+header{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.brand-icon{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(
+    135deg,
+    rgba(244,185,66,.2),
+    rgba(72,215,232,.15)
+  );
+  border:1px solid rgba(244,185,66,.3);
+  font-size:19px;
+}
+.brand-title{
+  font-family:"Space Grotesk",sans-serif;
+  font-weight:700;
+}
+.brand-sub{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:9px;
+  color:var(--cyan);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.back{
+  text-decoration:none;
+  color:var(--muted);
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+  padding:9px 13px;
+  border-radius:9px;
+  font-size:12px;
+}
+/* MAIN */
+main{
+  width:min(1100px,100%);
+  margin:auto;
+  padding:45px 20px 80px;
+}
+.kicker{
+  font-family:"IBM Plex Mono",monospace;
+  color:var(--gold);
+  font-size:10px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+h1{
+  font-family:"Space Grotesk",sans-serif;
+  font-size:clamp(42px,7vw,70px);
+  line-height:.95;
+  letter-spacing:-.06em;
+  margin:0;
+}
+.gradient{
+  background:linear-gradient(
+    90deg,
+    var(--gold),
+    var(--cyan),
+    var(--purple)
+  );
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.intro{
+  max-width:650px;
+  color:var(--muted);
+  line-height:1.7;
+  margin:20px 0 35px;
+}
+/* AI BANNER */
+.ai-banner{
+  border:1px solid rgba(72,215,232,.22);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(72,215,232,.08),
+      rgba(168,121,255,.06)
+    ),
+    var(--panel);
+  border-radius:18px;
+  padding:20px;
+  display:flex;
+  align-items:center;
+  gap:15px;
+  margin-bottom:28px;
+}
+.ai-orb{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  color:#08090D;
+  font-weight:900;
+  box-shadow:0 0 25px rgba(72,215,232,.25);
+  flex-shrink:0;
+}
+.ai-text{
+  line-height:1.5;
+}
+.ai-text strong{
+  color:var(--gold2);
+}
+/* TOOLBAR */
+.toolbar{
+  display:flex;
+  gap:10px;
+  margin-bottom:18px;
+}
+.search{
+  flex:1;
+  background:var(--panel);
+  border:1px solid var(--line);
+  color:white;
+  padding:13px;
+  border-radius:10px;
+  font-size:14px;
+}
+.refresh{
+  border:1px solid var(--line);
+  background:var(--panel2);
+  color:white;
+  border-radius:10px;
+  padding:0 15px;
+  cursor:pointer;
+}
+/* RELEASE GRID */
+.release-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+}
+.release{
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--line);
+  border-radius:17px;
+  padding:20px;
+}
+.release:hover{
+  border-color:rgba(244,185,66,.3);
+}
+.release-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.release-title{
+  font-family:"Space Grotesk",sans-serif;
+  font-weight:700;
+  font-size:20px;
+}
+.release-artist{
+  color:var(--cyan);
+  font-size:12px;
+  margin-top:4px;
+}
+.status{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:8px;
+  color:var(--green);
+  border:1px solid rgba(67,226,154,.25);
+  background:rgba(67,226,154,.07);
+  border-radius:5px;
+  padding:5px 7px;
+  height:max-content;
+}
+.description{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+  margin:18px 0;
+}
+.audio{
+  width:100%;
+  margin-bottom:16px;
+}
+.release-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.action{
+  min-height:40px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+  color:white;
+  cursor:pointer;
+  font-size:11px;
+  font-weight:600;
+}
+.action:hover{
+  background:rgba(255,255,255,.08);
+}
+.action.primary{
+  background:var(--gold);
+  color:#08090D;
+  border-color:var(--gold);
+}
+.action.cyan{
+  background:rgba(72,215,232,.1);
+  border-color:rgba(72,215,232,.25);
+}
+.action.purple{
+  background:rgba(168,121,255,.1);
+  border-color:rgba(168,121,255,.25);
+}
+.release-body{
+  display:none;
+  margin-top:15px;
+}
+.release-body.open{
+  display:block;
+}
+textarea{
+  width:100%;
+  min-height:280px;
+  resize:vertical;
+  background:#090B10;
+  border:1px solid var(--line);
+  color:#DCE2EA;
+  border-radius:10px;
+  padding:14px;
+  font-family:Inter,sans-serif;
+  font-size:13px;
+  line-height:1.6;
+}
+/* EMPTY */
+.empty{
+  padding:60px 20px;
+  text-align:center;
+  border:1px dashed var(--line);
+  border-radius:16px;
+  color:var(--muted);
+}
+/* TOAST */
+.toast{
+  position:fixed;
+  bottom:22px;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:#171C25;
+  border:1px solid var(--line);
+  border-radius:30px;
+  padding:11px 18px;
+  font-size:12px;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+  z-index:50;
+}
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+/* MOBILE */
+@media(max-width:700px){
+  header{
+    padding:16px;
+  }
+  main{
+    padding:35px 16px 60px;
+  }
+  .release-grid{
+    grid-template-columns:1fr;
+  }
+  .ai-banner{
+    align-items:flex-start;
+  }
+  .toolbar{
+    flex-direction:column;
+  }
+  .refresh{
+    min-height:44px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="grid"></div>
+<div class="glow one"></div>
+<div class="glow two"></div>
+<header>
+  <div class="brand">
+    <div class="brand-icon">
+      ✦
+    </div>
+    <div>
+      <div class="brand-title">
+        PRESS DESK AI
+      </div>
+      <div class="brand-sub">
+        Music Promotion
+      </div>
+    </div>
+  </div>
+  <a class="back" href="../">
+    ← Command Home
+  </a>
+</header>
+<main>
+  <div class="kicker">
+    AI Promotion Desk
+  </div>
+  <h1>
+    Turn finished songs into
+    <span class="gradient">attention.</span>
+  </h1>
+  <p class="intro">
+    Press Desk AI watches the completed-song catalog,
+    prepares press releases and puts everything you need
+    to post the release directly in front of you.
+  </p>
+  <div class="ai-banner">
+    <div class="ai-orb">
+      ✦
+    </div>
+    <div class="ai-text" id="aiMessage">
+      Checking the completed song catalog...
+    </div>
+  </div>
+  <div class="toolbar">
+    <input
+      class="search"
+      id="search"
+      type="search"
+      placeholder="Search songs or artists..."
+    >
+    <button
+      class="refresh"
+      id="refresh"
+    >
+      Refresh
+    </button>
+  </div>
+  <div
+    class="release-grid"
+    id="releaseGrid"
+  ></div>
+  <div
+    class="empty"
+    id="empty"
+    style="display:none;"
+  >
+    No completed songs are waiting for a press release.
+  </div>
+</main>
+<div
+  class="toast"
+  id="toast"
+></div>
+<script type="module">
+import {
+  initializeApp
+} from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs
+} from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+/* FIREBASE */
+const firebaseConfig = {
+  apiKey:
+    "AIzaSyDm0UOhhugquxipVs-WUv8uLvK-eclJbSI",
+  authDomain:
+    "recordlabel-48b81.firebaseapp.com",
+  projectId:
+    "recordlabel-48b81",
+  storageBucket:
+    "recordlabel-48b81.firebasestorage.app",
+  messagingSenderId:
+    "338109981947",
+  appId:
+    "1:338109981947:web:e4db502810e7096cb33c5e",
+  measurementId:
+    "G-G2E9RT4REM"
+};
+const app =
+  initializeApp(firebaseConfig);
+const db =
+  getFirestore(app);
+let songs = [];
+/* ELEMENTS */
+const grid =
+  document.getElementById("releaseGrid");
+const empty =
+  document.getElementById("empty");
+const search =
+  document.getElementById("search");
+const aiMessage =
+  document.getElementById("aiMessage");
+const toast =
+  document.getElementById("toast");
+/* TOAST */
+function showToast(message){
+  toast.textContent =
+    message;
+  toast.classList.add("show");
+  setTimeout(()=>{
+    toast.classList.remove("show");
+  },1800);
+}
+/* ESCAPE HTML */
+function escapeHTML(value){
+  const div =
+    document.createElement("div");
+  div.textContent =
+    value || "";
+  return div.innerHTML;
+}
+/* PRESS RELEASE */
+function makeRelease(song){
+  const title =
+    song.title || "New Release";
+  const artist =
+    song.artist || "the artist";
+  const description =
+    song.description ||
+    `${artist} announces the release of "${title}".`;
+  return `FOR IMMEDIATE RELEASE
+${artist} Announces "${title}"
+${description}
+"${title}" is now complete and ready for promotion and radio exposure.
+The release is being prepared for distribution and exposure through STV-ONAIR and Island Spice Radio.
+For interviews, media requests, promotional opportunities or additional information, please contact the artist or record label representative.
+LISTEN:
+${song.audioUrl || "Audio link available upon request"}
+#${artist.replace(/\s+/g,"")}
+#${title.replace(/\s+/g,"")}
+#NewMusic
+#NewRelease
+#IndependentArtist
+#STVONAIR
+#IslandSpiceRadio`;
+}
+/* QUALIFICATION */
+function isFinished(song){
+  return (
+    song.title &&
+    song.artist &&
+    song.lyricsComplete === true &&
+    song.audioComplete === true
+  );
+}
+/* LOAD */
+async function loadSongs(){
+  try{
+    const snapshot =
+      await getDocs(
+        collection(db,"songs")
+      );
+    songs = [];
+    snapshot.forEach(doc=>{
+      const song = {
+        id:doc.id,
+        ...doc.data()
+      };
+      if(isFinished(song)){
+        songs.push(song);
+      }
+    });
+    updateAI();
+    render();
+  }catch(error){
+    console.error(error);
+    aiMessage.innerHTML = `
+      <strong>Press Desk is offline.</strong><br>
+      I couldn't connect to the song catalog.
+    `;
+  }
+}
+/* AI MESSAGE */
+function updateAI(){
+  const count =
+    songs.length;
+  if(count === 0){
+    aiMessage.innerHTML = `
+      <strong>No press releases are waiting.</strong><br>
+      Finish a song's lyrics and audio and I'll prepare it here.
+    `;
+    return;
+  }
+  aiMessage.innerHTML = `
+    <strong>You have ${count} press release${count === 1 ? "" : "s"} available.</strong><br>
+    Review them below and choose where you want to post.
+  `;
+}
+/* RENDER */
+function render(){
+  const query =
+    search.value
+      .trim()
+      .toLowerCase();
+  const filtered =
+    songs.filter(song=>{
+      if(!query)
+        return true;
+      return (
+        (song.title || "")
+          .toLowerCase()
+          .includes(query)
+        ||
+        (song.artist || "")
+          .toLowerCase()
+          .includes(query)
+      );
+    });
+  grid.innerHTML = "";
+  empty.style.display =
+    filtered.length
+      ? "none"
+      : "block";
+  filtered.forEach(song=>{
+    const release =
+      makeRelease(song);
+    const card =
+      document.createElement("article");
+    card.className =
+      "release";
+    card.innerHTML = `
+      <div class="release-top">
+        <div>
+          <div class="release-title">
+            ${escapeHTML(song.title)}
+          </div>
+          <div class="release-artist">
+            ${escapeHTML(song.artist)}
+          </div>
+        </div>
+        <div class="status">
+          READY
+        </div>
+      </div>
+      <div class="description">
+        ${escapeHTML(
+          song.description ||
+          "Completed song ready for promotion."
+        )}
+      </div>
+      ${
+        song.audioUrl
+        ?
+        `
+        <audio
+          class="audio"
+          controls
+          preload="none"
+          src="${escapeHTML(song.audioUrl)}"
+        ></audio>
+        `
+        :
+        `
+        <div
+          style="
+          color:var(--red);
+          font-size:11px;
+          margin-bottom:15px;
+          "
+        >
+          NO AUDIO URL
+        </div>
+        `
+      }
+      <div class="release-actions">
+        <button
+          class="action primary"
+          data-action="copy"
+        >
+          COPY RELEASE
+        </button>
+        <button
+          class="action cyan"
+          data-action="view"
+        >
+          VIEW RELEASE
+        </button>
+        <button
+          class="action"
+          data-action="facebook"
+        >
+          FACEBOOK
+        </button>
+        <button
+          class="action"
+          data-action="x"
+        >
+          X / TWITTER
+        </button>
+        <button
+          class="action purple"
+          data-action="instagram"
+        >
+          INSTAGRAM
+        </button>
+        <button
+          class="action"
+          data-action="tiktok"
+        >
+          TIKTOK
+        </button>
+        <button
+          class="action"
+          data-action="youtube"
+        >
+          YOUTUBE
+        </button>
+        <button
+          class="action"
+          data-action="email"
+        >
+          EMAIL
+        </button>
+      </div>
+      <div class="release-body">
+        <textarea readonly>${escapeHTML(
+          release
+        )}</textarea>
+      </div>
+    `;
+    const view =
+      card.querySelector(
+        '[data-action="view"]'
+      );
+    const body =
+      card.querySelector(
+        ".release-body"
+      );
+    view.addEventListener(
+      "click",
+      ()=>{
+        body.classList.toggle("open");
+      }
+    );
+    card
+      .querySelector(
+        '[data-action="copy"]'
+      )
+      .addEventListener(
+        "click",
+        async()=>{
+          try{
+            await navigator.clipboard
+              .writeText(release);
+            showToast(
+              "Press release copied"
+            );
+          }catch{
+            showToast(
+              "Copy failed"
+            );
+          }
+        }
+      );
+    /*
+      FACEBOOK
+      Facebook does not reliably accept
+      arbitrary prefilled post text.
+      We copy the release first, then open
+      Facebook.
+    */
+    card
+      .querySelector(
+        '[data-action="facebook"]'
+      )
+      .addEventListener(
+        "click",
+        async()=>{
+          await copyRelease(release);
+          window.open(
+            "https://www.facebook.com/",
+            "_blank"
+          );
+        }
+      );
+    /*
+      X / TWITTER
+    */
+    card
+      .querySelector(
+        '[data-action="x"]'
+      )
+      .addEventListener(
+        "click",
+        ()=>{
+          const text =
+            release.substring(
+              0,
+              260
+            );
+          const url =
+            "https://twitter.com/intent/tweet?text="
+            +
+            encodeURIComponent(
+              text
+            );
+          window.open(
+            url,
+            "_blank"
+          );
+        }
+      );
+    /*
+      INSTAGRAM
+    */
+    card
+      .querySelector(
+        '[data-action="instagram"]'
+      )
+      .addEventListener(
+        "click",
+        async()=>{
+          await copyRelease(release);
+          window.open(
+            "https://www.instagram.com/",
+            "_blank"
+          );
+        }
+      );
+    /*
+      TIKTOK
+    */
+    card
+      .querySelector(
+        '[data-action="tiktok"]'
+      )
+      .addEventListener(
+        "click",
+        async()=>{
+          await copyRelease(release);
+          window.open(
+            "https://www.tiktok.com/upload",
+            "_blank"
+          );
+        }
+      );
+    /*
+      YOUTUBE
+    */
+    card
+      .querySelector(
+        '[data-action="youtube"]'
+      )
+      .addEventListener(
+        "click",
+        async()=>{
+          await copyRelease(release);
+          window.open(
+            "https://studio.youtube.com/",
+            "_blank"
+          );
+        }
+      );
+    /*
+      EMAIL
+    */
+    card
+      .querySelector(
+        '[data-action="email"]'
+      )
+      .addEventListener(
+        "click",
+        ()=>{
+          const subject =
+            `${song.artist} — ${song.title}`;
+          const body =
+            release;
+          window.location.href =
+            "mailto:?subject="
+            +
+            encodeURIComponent(
+              subject
+            )
+            +
+            "&body="
+            +
+            encodeURIComponent(
+              body
+            );
+        }
+      );
+    grid.appendChild(card);
+  });
+}
+/* COPY */
+async function copyRelease(text){
+  try{
+    await navigator.clipboard
+      .writeText(text);
+    showToast(
+      "Release copied — ready to paste"
+    );
+  }catch(error){
+    showToast(
+      "Copy failed"
+    );
+  }
+}
+/* SEARCH */
+search.addEventListener(
+  "input",
+  render
+);
+/* REFRESH */
+document
+  .getElementById("refresh")
+  .addEventListener(
+    "click",
+    loadSongs
+  );
+/* START */
+loadSongs();
+</script>
+</body>
+</html>
