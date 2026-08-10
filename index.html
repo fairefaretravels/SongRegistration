@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08090D">
+<title>SENSTACK MUSIC — Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08090D;
+  --bg2:#0E1118;
+  --panel:rgba(18,22,31,.82);
+  --panel2:rgba(25,30,41,.88);
+  --line:rgba(255,255,255,.10);
+  --text:#F5F7FA;
+  --muted:#929AAA;
+  /* NEW COLOR PALETTE */
+  --gold:#F4B942;
+  --gold2:#FFCF70;
+  --cyan:#48D7E8;
+  --purple:#A879FF;
+  --green:#43E29A;
+  --red:#FF6474;
+  --shadow:0 30px 80px rgba(0,0,0,.55);
+}
+*{
+  box-sizing:border-box;
+}
+html{
+  scroll-behavior:smooth;
+}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 50% -10%,rgba(72,215,232,.12),transparent 35%),
+    radial-gradient(circle at 10% 30%,rgba(168,121,255,.10),transparent 30%),
+    radial-gradient(circle at 90% 70%,rgba(244,185,66,.08),transparent 30%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,sans-serif;
+  overflow-x:hidden;
+}
+/* =========================
+   ANIMATED BACKGROUND
+========================= */
+.background{
+  position:fixed;
+  inset:0;
+  z-index:-5;
+  overflow:hidden;
+  pointer-events:none;
+}
+.grid{
+  position:absolute;
+  inset:-50%;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:55px 55px;
+  transform:perspective(700px) rotateX(62deg);
+  transform-origin:center top;
+  animation:gridMove 18s linear infinite;
+}
+@keyframes gridMove{
+  from{transform:perspective(700px) rotateX(62deg) translateY(0);}
+  to{transform:perspective(700px) rotateX(62deg) translateY(55px);}
+}
+.glow{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(70px);
+  opacity:.18;
+  animation:float 12s ease-in-out infinite alternate;
+}
+.glow.one{
+  width:350px;
+  height:350px;
+  background:var(--cyan);
+  left:-120px;
+  top:15%;
+}
+.glow.two{
+  width:300px;
+  height:300px;
+  background:var(--purple);
+  right:-100px;
+  top:45%;
+  animation-delay:-4s;
+}
+.glow.three{
+  width:280px;
+  height:280px;
+  background:var(--gold);
+  left:40%;
+  bottom:-150px;
+  animation-delay:-7s;
+}
+@keyframes float{
+  from{transform:translate3d(0,0,0) scale(1);}
+  to{transform:translate3d(30px,-35px,0) scale(1.12);}
+}
+/* =========================
+   NAV
+========================= */
+nav{
+  position:relative;
+  z-index:10;
+  max-width:1200px;
+  margin:auto;
+  padding:24px 24px 0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-family:"Space Grotesk",sans-serif;
+  font-weight:700;
+  letter-spacing:-.04em;
+}
+.logo-mark{
+  width:38px;
+  height:38px;
+  border:1px solid rgba(244,185,66,.5);
+  border-radius:11px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,rgba(244,185,66,.18),rgba(72,215,232,.08));
+  box-shadow:0 0 30px rgba(244,185,66,.12);
+}
+.logo-mark::before{
+  content:"";
+  width:14px;
+  height:14px;
+  border-radius:4px;
+  background:linear-gradient(135deg,var(--gold),var(--cyan));
+  box-shadow:0 0 15px rgba(72,215,232,.5);
+}
+.logo span{
+  font-size:17px;
+}
+.status{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-family:"IBM Plex Mono",monospace;
+  font-size:10px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+.status-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 12px var(--green);
+}
+/* =========================
+   HERO
+========================= */
+.hero{
+  max-width:1200px;
+  margin:auto;
+  min-height:calc(100vh - 70px);
+  padding:70px 24px 80px;
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:50px;
+  align-items:center;
+}
+.kicker{
+  font-family:"IBM Plex Mono",monospace;
+  color:var(--gold);
+  font-size:11px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  margin-bottom:18px;
+}
+h1{
+  font-family:"Space Grotesk",sans-serif;
+  font-size:clamp(48px,7vw,86px);
+  line-height:.91;
+  letter-spacing:-.065em;
+  margin:0;
+  max-width:800px;
+}
+.gradient-text{
+  background:linear-gradient(
+    90deg,
+    var(--gold),
+    var(--gold2),
+    var(--cyan),
+    var(--purple)
+  );
+  background-size:300% auto;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:gradientMove 8s linear infinite;
+}
+@keyframes gradientMove{
+  to{background-position:300% center;}
+}
+.hero-copy{
+  color:var(--muted);
+  font-size:17px;
+  line-height:1.7;
+  max-width:620px;
+  margin:26px 0 30px;
+}
+.buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+}
+.btn{
+  min-height:50px;
+  padding:0 20px;
+  border-radius:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  font-family:"Space Grotesk",sans-serif;
+  font-weight:700;
+  transition:.2s ease;
+}
+.btn-primary{
+  color:#08090D;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  box-shadow:0 12px 35px rgba(244,185,66,.18);
+}
+.btn-secondary{
+  color:var(--text);
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--line);
+  backdrop-filter:blur(12px);
+}
+.btn:hover{
+  transform:translateY(-2px);
+}
+/* =========================
+   AI ASSISTANT
+========================= */
+.assistant{
+  position:relative;
+}
+.assistant-card{
+  position:relative;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.025)),
+    var(--panel);
+  border:1px solid rgba(72,215,232,.22);
+  border-radius:24px;
+  padding:24px;
+  box-shadow:var(--shadow),0 0 80px rgba(72,215,232,.07);
+  backdrop-filter:blur(22px);
+  overflow:hidden;
+}
+.assistant-card::before{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  right:-80px;
+  top:-80px;
+  background:var(--cyan);
+  filter:blur(70px);
+  opacity:.12;
+}
+.ai-top{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:22px;
+}
+.ai-icon{
+  width:46px;
+  height:46px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,rgba(72,215,232,.18),rgba(168,121,255,.18));
+  border:1px solid rgba(72,215,232,.25);
+}
+.ai-icon span{
+  font-size:20px;
+}
+.ai-name{
+  font-family:"Space Grotesk",sans-serif;
+  font-weight:700;
+}
+.ai-label{
+  color:var(--cyan);
+  font-family:"IBM Plex Mono",monospace;
+  font-size:9px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-top:3px;
+}
+.ai-message{
+  background:rgba(0,0,0,.22);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px;
+  line-height:1.6;
+  color:#DCE2EA;
+  min-height:90px;
+}
+.ai-message strong{
+  color:var(--gold2);
+}
+.ai-actions{
+  display:flex;
+  gap:8px;
+  margin-top:14px;
+}
+.ai-action{
+  flex:1;
+  min-height:44px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  cursor:pointer;
+  font-family:"Space Grotesk",sans-serif;
+  font-weight:600;
+}
+.ai-action.primary{
+  background:var(--gold);
+  color:#08090D;
+  border-color:var(--gold);
+}
+.ai-action:hover{
+  filter:brightness(1.08);
+}
+.ai-status{
+  display:flex;
+  justify-content:space-between;
+  margin-top:18px;
+  padding-top:15px;
+  border-top:1px solid var(--line);
+  font-family:"IBM Plex Mono",monospace;
+  font-size:9px;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+.ai-status .online{
+  color:var(--green);
+}
+/* =========================
+   COMMAND MODULES
+========================= */
+.modules{
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 24px 80px;
+}
+.section-label{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:10px;
+  color:var(--muted);
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  margin-bottom:14px;
+}
+.module-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+.module{
+  position:relative;
+  min-height:190px;
+  padding:24px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.035);
+  text-decoration:none;
+  color:var(--text);
+  overflow:hidden;
+  transition:.25s ease;
+}
+.module:hover{
+  transform:translateY(-4px);
+  border-color:rgba(244,185,66,.35);
+  background:rgba(255,255,255,.055);
+}
+.module::after{
+  content:"→";
+  position:absolute;
+  right:22px;
+  bottom:18px;
+  font-size:24px;
+  color:var(--muted);
+  transition:.2s;
+}
+.module:hover::after{
+  color:var(--gold);
+  transform:translateX(5px);
+}
+.module-number{
+  font-family:"IBM Plex Mono",monospace;
+  color:var(--gold);
+  font-size:10px;
+}
+.module h2{
+  font-family:"Space Grotesk",sans-serif;
+  font-size:25px;
+  margin:35px 0 8px;
+  letter-spacing:-.03em;
+}
+.module p{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+  max-width:360px;
+}
+.module.home{
+  background:
+    radial-gradient(circle at 90% 10%,rgba(168,121,255,.12),transparent 35%),
+    rgba(255,255,255,.035);
+}
+.module.command{
+  background:
+    radial-gradient(circle at 90% 10%,rgba(244,185,66,.12),transparent 35%),
+    rgba(255,255,255,.035);
+}
+/* =========================
+   PRESS RELEASE POPUP
+========================= */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(12px);
+  z-index:100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.modal.open{
+  display:flex;
+}
+.modal-card{
+  width:min(650px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:#11151D;
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:24px;
+  box-shadow:var(--shadow);
+}
+.modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:20px;
+}
+.modal-header h2{
+  font-family:"Space Grotesk",sans-serif;
+  margin:0;
+}
+.close{
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.05);
+  color:white;
+  cursor:pointer;
+}
+.release{
+  padding:18px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  margin-bottom:10px;
+  background:rgba(255,255,255,.025);
+}
+.release-title{
+  font-family:"Space Grotesk",sans-serif;
+  font-weight:700;
+}
+.release-meta{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:5px;
+}
+.release-actions{
+  margin-top:14px;
+  display:flex;
+  gap:8px;
+}
+.release-actions button{
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.05);
+  color:white;
+  border-radius:8px;
+  padding:9px 12px;
+  cursor:pointer;
+}
+.release-actions button:first-child{
+  background:var(--gold);
+  color:#08090D;
+  border-color:var(--gold);
+}
+/* =========================
+   FOOTER
+========================= */
+footer{
+  max-width:1200px;
+  margin:auto;
+  padding:30px 24px 50px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  font-size:11px;
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  font-family:"IBM Plex Mono",monospace;
+}
+/* =========================
+   MOBILE
+========================= */
+@media(max-width:800px){
+  nav{
+    padding:18px 16px 0;
+  }
+  .status{
+    display:none;
+  }
+  .hero{
+    grid-template-columns:1fr;
+    padding:55px 16px 60px;
+    gap:35px;
+  }
+  h1{
+    font-size:clamp(48px,15vw,70px);
+  }
+  .hero-copy{
+    font-size:15px;
+  }
+  .assistant-card{
+    padding:19px;
+  }
+  .modules{
+    padding:0 16px 60px;
+  }
+  .module-grid{
+    grid-template-columns:1fr;
+  }
+  .module{
+    min-height:155px;
+  }
+  .module h2{
+    margin-top:28px;
+  }
+  footer{
+    padding:25px 16px 40px;
+    flex-direction:column;
+  }
+}
+</style>
+</head>
+<body>
+<div class="background">
+  <div class="grid"></div>
+  <div class="glow one"></div>
+  <div class="glow two"></div>
+  <div class="glow three"></div>
+</div>
+<nav>
+  <div class="logo">
+    <div class="logo-mark"></div>
+    <span>RECORD LABEL OS</span>
+  </div>
+  <div class="status">
+    <span class="status-dot"></span>
+    SYSTEM ONLINE
+  </div>
+</nav>
+<main>
+<section class="hero">
+  <div>
+    <div class="kicker">
+      Music Operations / Registration / Radio
+    </div>
+    <h1>
+      The music
+      <span class="gradient-text">command layer.</span>
+    </h1>
+    <p class="hero-copy">
+      One place to move finished songs from creation and registration
+      into radio, promotion and distribution.
+    </p>
+    <div class="buttons">
+      <a class="btn btn-primary" href="Home/">
+        ENTER HOME
+      </a>
+      <a class="btn btn-secondary" href="Command-Center/">
+        COMMAND CENTER
+      </a>
+    </div>
+  </div>
+  <!-- AI ASSISTANT -->
+  <div class="assistant">
+    <div class="assistant-card">
+      <div class="ai-top">
+        <div class="ai-icon">
+          <span>✦</span>
+        </div>
+        <div>
+          <div class="ai-name">
+            Press Desk AI
+          </div>
+          <div class="ai-label">
+            Promotion Assistant
+          </div>
+        </div>
+      </div>
+      <div class="ai-message" id="aiMessage">
+        Checking your completed songs...
+      </div>
+      <div class="ai-actions">
+        <button class="ai-action primary" id="reviewBtn">
+          Review Releases
+        </button>
+        <button class="ai-action" id="laterBtn">
+          Later
+        </button>
+      </div>
+      <div class="ai-status">
+        <span>
+          FIRESTORE
+        </span>
+        <span class="online" id="firebaseStatus">
+          CONNECTING
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="modules">
+  <div class="section-label">
+    Operations
+  </div>
+  <div class="module-grid">
+    <a class="module home" href="Home/">
+      <div class="module-number">
+        01 / HOME
+      </div>
+      <h2>
+        Home
+      </h2>
+      <p>
+        Your main music operations dashboard, projects,
+        tools and daily workflow.
+      </p>
+    </a>
+    <a class="module command" href="Command-Center/">
+      <div class="module-number">
+        02 / RADIO
+      </div>
+      <h2>
+        Command Center
+      </h2>
+      <p>
+        Manage completed songs, audio, lyrics,
+        registration and radio distribution.
+      </p>
+    </a>
+  </div>
+</section>
+</main>
+<footer>
+  <span>
+    RECORD LABEL OS
+  </span>
+  <span>
+    STV-ONAIR · ISLAND SPICE RADIO
+  </span>
+</footer>
+<!-- PRESS RELEASE MODAL -->
+<div class="modal" id="releaseModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>
+        Press Release Desk
+      </h2>
+      <button class="close" id="closeModal">
+        ×
+      </button>
+    </div>
+    <div id="releaseList"></div>
+  </div>
+</div>
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDm0UOhhugquxipVs-WUv8uLvK-eclJbSI",
+  authDomain: "recordlabel-48b81.firebaseapp.com",
+  projectId: "recordlabel-48b81",
+  storageBucket: "recordlabel-48b81.firebasestorage.app",
+  messagingSenderId: "338109981947",
+  appId: "1:338109981947:web:e4db502810e7096cb33c5e",
+  measurementId: "G-G2E9RT4REM"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const aiMessage =
+  document.getElementById("aiMessage");
+const firebaseStatus =
+  document.getElementById("firebaseStatus");
+const releaseModal =
+  document.getElementById("releaseModal");
+const releaseList =
+  document.getElementById("releaseList");
+let completedSongs = [];
+/*
+  A song qualifies for a press release when:
+  1. Lyrics are complete
+  2. Audio is complete
+  3. The song has a title
+  4. The song has an artist
+  If you want registration to be required first,
+  change the condition below.
+*/
+function qualifiesForPress(song){
+  return (
+    song.title &&
+    song.artist &&
+    song.lyricsComplete === true &&
+    song.audioComplete === true
+  );
+}
+/*
+  Create a simple press-release preview.
+  This is intentionally generated locally for now.
+  Later this can connect to an actual AI API/backend.
+*/
+function createPressRelease(song){
+  const title = song.title || "New Release";
+  const artist = song.artist || "the artist";
+  const description =
+    song.description ||
+    `${artist} prepares to release "${title}".`;
+  return `FOR IMMEDIATE RELEASE
+${artist} Announces "${title}"
+${description}
+"${title}" is now complete and prepared for its next stage of release, promotion and radio distribution.
+The release will be positioned for radio exposure through STV-ONAIR and Island Spice Radio.
+For interviews, media requests and additional information, please contact the artist or record label representative.
+#${artist.replace(/\s+/g,"")} #${title.replace(/\s+/g,"")}`;
+}
+/*
+  Load songs from Firestore.
+*/
+async function loadSongs(){
+  try{
+    const snapshot =
+      await getDocs(collection(db,"songs"));
+    completedSongs = [];
+    snapshot.forEach(doc => {
+      const song = {
+        id: doc.id,
+        ...doc.data()
+      };
+      if(qualifiesForPress(song)){
+        completedSongs.push(song);
+      }
+    });
+    firebaseStatus.textContent =
+      "CONNECTED";
+    firebaseStatus.style.color =
+      "var(--green)";
+    updateAssistant();
+  }
+  catch(error){
+    console.error(error);
+    firebaseStatus.textContent =
+      "ERROR";
+    firebaseStatus.style.color =
+      "var(--red)";
+    aiMessage.innerHTML =
+      `<strong>Press Desk unavailable.</strong><br>
+       I couldn't connect to the song catalog right now.`;
+  }
+}
+/*
+  Update the opening assistant message.
+*/
+function updateAssistant(){
+  const count =
+    completedSongs.length;
+  if(count === 0){
+    aiMessage.innerHTML =
+      `<strong>No press releases are waiting.</strong><br>
+       Finish a song's lyrics and audio and I'll put it on the press desk.`;
+    return;
+  }
+  aiMessage.innerHTML =
+    `<strong>You have ${count} press release${count === 1 ? "" : "s"} available.</strong><br>
+     Should I send them out?`;
+}
+/*
+  Show release queue.
+*/
+function showReleases(){
+  releaseList.innerHTML = "";
+  if(completedSongs.length === 0){
+    releaseList.innerHTML = `
+      <div class="release">
+        No completed songs are currently waiting
+        for a press release.
+      </div>
+    `;
+  }
+  completedSongs.forEach(song => {
+    const release =
+      createPressRelease(song);
+    const item =
+      document.createElement("div");
+    item.className =
+      "release";
+    item.innerHTML = `
+      <div class="release-title">
+        ${escapeHtml(song.title)}
+      </div>
+      <div class="release-meta">
+        ${escapeHtml(song.artist)}
+      </div>
+      <div class="release-actions">
+        <button class="view-release">
+          View Release
+        </button>
+        <button class="copy-release">
+          Copy
+        </button>
+      </div>
+      <pre class="release-text"
+        style="
+          display:none;
+          white-space:pre-wrap;
+          font-family:Inter,sans-serif;
+          color:#C9D0DB;
+          font-size:13px;
+          line-height:1.6;
+          margin-top:15px;
+        "
+      >${escapeHtml(release)}</pre>
+    `;
+    const view =
+      item.querySelector(".view-release");
+    const copy =
+      item.querySelector(".copy-release");
+    const text =
+      item.querySelector(".release-text");
+    view.addEventListener("click",()=>{
+      text.style.display =
+        text.style.display === "none"
+        ? "block"
+        : "none";
+    });
+    copy.addEventListener("click",async()=>{
+      try{
+        await navigator.clipboard.writeText(release);
+        copy.textContent =
+          "Copied";
+        setTimeout(()=>{
+          copy.textContent =
+            "Copy";
+        },1500);
+      }
+      catch(error){
+        alert("Copy failed. Select the release text manually.");
+      }
+    });
+    releaseList.appendChild(item);
+  });
+  releaseModal.classList.add("open");
+}
+/*
+  HTML escaping.
+*/
+function escapeHtml(value){
+  const div =
+    document.createElement("div");
+  div.textContent =
+    value || "";
+  return div.innerHTML;
+}
+/*
+  Buttons.
+*/
+document
+  .getElementById("reviewBtn")
+  .addEventListener("click",showReleases);
+document
+  .getElementById("closeModal")
+  .addEventListener("click",()=>{
+    releaseModal.classList.remove("open");
+  });
+document
+  .getElementById("laterBtn")
+  .addEventListener("click",()=>{
+    aiMessage.innerHTML =
+      `<strong>I'll hold them.</strong><br>
+       The completed songs will stay on the press desk until you're ready.`;
+  });
+releaseModal.addEventListener("click",event=>{
+  if(event.target === releaseModal){
+    releaseModal.classList.remove("open");
+  }
+});
+loadSongs();
+</script>
+</body>
+</html>
